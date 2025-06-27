@@ -55,71 +55,71 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-500/20 to-pink-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+    <main className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Porsche-style background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Main login card */}
-      <div className="relative z-10 w-full max-w-md">
+      {/* Main login container */}
+      <div className="relative z-10 w-full max-w-lg">
         {/* Logo/Brand section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl mb-4">
-            <span className="text-2xl font-bold text-white">S</span>
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-[#D5001C] rounded-full shadow-2xl mb-8">
+            <span className="text-4xl font-bold text-white tracking-tight">S</span>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
+          <h1 className="text-6xl font-bold text-white mb-4 tracking-tight">
             Shifty
           </h1>
-          <p className="text-gray-400 text-sm font-medium">Shift Management Reimagined</p>
+          <p className="text-gray-400 text-xl font-light tracking-wide">Shift Management Reimagined</p>
         </div>
 
-        {/* Glassmorphism login form */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
+        {/* Porsche-style login form */}
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl p-10 shadow-2xl">
           {/* Role Selection */}
-          <div className="mb-6">
-            <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 block">
+          <div className="mb-10">
+            <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest mb-6 block">
               I am a...
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-6">
               <button
                 type="button"
                 onClick={() => setSelectedRole('manager')}
-                className={`p-4 rounded-xl border transition-all duration-300 ${
+                className={`p-8 rounded-xl border-2 transition-all duration-300 ${
                   selectedRole === 'manager'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 border-blue-400 text-white'
-                    : 'bg-white/10 border-white/20 text-gray-300 hover:bg-white/20'
+                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-lg'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#D5001C]/30 hover:bg-gray-50'
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-2xl mb-2">👔</div>
-                  <div className="font-semibold">Manager</div>
-                  <div className="text-xs opacity-80">Post & manage shifts</div>
+                  <div className="text-4xl mb-4">👔</div>
+                  <div className="font-bold text-lg mb-2">Manager</div>
+                  <div className="text-sm opacity-80">Post & manage shifts</div>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole('staff')}
-                className={`p-4 rounded-xl border transition-all duration-300 ${
+                className={`p-8 rounded-xl border-2 transition-all duration-300 ${
                   selectedRole === 'staff'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 border-blue-400 text-white'
-                    : 'bg-white/10 border-white/20 text-gray-300 hover:bg-white/20'
+                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-lg'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#D5001C]/30 hover:bg-gray-50'
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-2xl mb-2">💼</div>
-                  <div className="font-semibold">Staff</div>
-                  <div className="text-xs opacity-80">Find & accept shifts</div>
+                  <div className="text-4xl mb-4">💼</div>
+                  <div className="font-bold text-lg mb-2">Staff</div>
+                  <div className="text-sm opacity-80">Find & accept shifts</div>
                 </div>
               </button>
             </div>
           </div>
 
-          <form onSubmit={handleEmailLogin} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+          <form onSubmit={handleEmailLogin} className="space-y-8">
+            <div className="space-y-4">
+              <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest">
                 Email Address
               </label>
               <input
@@ -128,12 +128,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl p-5 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 transition-all duration-300 text-lg"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+            <div className="space-y-4">
+              <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest">
                 Password
               </label>
               <input
@@ -142,44 +142,44 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl p-5 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 transition-all duration-300 text-lg"
               />
             </div>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-400/30 rounded-xl p-3">
-                <p className="text-red-300 text-sm">{error}</p>
+              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                <p className="text-red-600 text-sm font-medium">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+              className="w-full bg-[#D5001C] hover:bg-[#B0001A] text-white font-bold py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 text-lg tracking-wide"
             >
               Sign In as {selectedRole === 'manager' ? 'Manager' : 'Staff'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-1 border-t border-white/20"></div>
-            <span className="px-4 text-gray-400 text-sm font-medium">or</span>
-            <div className="flex-1 border-t border-white/20"></div>
+          <div className="flex items-center my-10">
+            <div className="flex-1 border-t-2 border-gray-200"></div>
+            <span className="px-6 text-gray-500 text-sm font-semibold uppercase tracking-widest">or</span>
+            <div className="flex-1 border-t-2 border-gray-200"></div>
           </div>
 
           {/* Google sign-in */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 font-medium hover:bg-white transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3"
+            className="w-full bg-white border-2 border-gray-200 rounded-xl p-5 text-gray-700 font-semibold hover:border-[#D5001C]/30 hover:bg-gray-50 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-4 text-lg"
           >
-            <img src="/google-logo.svg" alt="Google" className="h-5 w-5" />
+            <img src="/google-logo.svg" alt="Google" className="h-6 w-6" />
             Sign in with Google
           </button>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-xs">
+        <div className="text-center mt-12">
+          <p className="text-gray-500 text-sm font-light tracking-wide">
             © 2024 Shifty. Premium shift management for modern teams.
           </p>
         </div>
