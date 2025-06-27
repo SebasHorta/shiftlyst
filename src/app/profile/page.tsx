@@ -226,275 +226,280 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
-      {/* Porsche-style subtle background */}
+      {/* Enhanced Porsche-style background with animated particles */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
+        
+        {/* Animated floating particles */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        
+        {/* Additional subtle particles */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
+        
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Enhanced Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
+              {/* Animated glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
               {/* Logo design - stylized "S" with shift arrow */}
               <div className="relative z-10 flex items-center justify-center">
                 <div className="relative">
-                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  <div className="text-white font-bold text-2xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
                   {/* Shift arrow overlay */}
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
                 </div>
               </div>
-              {/* Geometric accents */}
-              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
-              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
+              {/* Enhanced geometric accents */}
+              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
+              <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
-                ShiftLyst Profile
+              <h1 className="text-5xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                My Profile
               </h1>
-              <p className="text-gray-300 text-lg font-light tracking-wide">Track your performance and achievements</p>
+              <p className="text-gray-300 text-xl font-light tracking-wide mb-1">Track your performance and achievements</p>
+              <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">Performance Analytics • Achievement Tracking</p>
             </div>
           </div>
           <button
-            onClick={() => router.push('/staff')}
-            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
+            onClick={() => router.back()}
+            className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-2xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-bold tracking-wide transform hover:scale-[1.02]"
           >
-            Back to Dashboard
+            Back
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-12">
-          {(['overview', 'badges', 'history'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-8 py-4 rounded-xl font-medium transition-all duration-300 tracking-wide ${
-                activeTab === tab
-                  ? 'bg-[#D5001C] text-white shadow-md'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
-              }`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+        {/* Enhanced Tab Navigation */}
+        <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl mb-8">
+          <div className="flex gap-2">
+            {[
+              { id: 'overview', label: 'Overview', icon: '📊' },
+              { id: 'badges', label: 'Badges', icon: '🏆' },
+              { id: 'history', label: 'History', icon: '📅' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-bold transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white shadow-lg'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-[#D5001C]'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-8">
-            {/* Key Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Reliability Score */}
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${getReliabilityColor(stats.reliabilityScore)} rounded-xl flex items-center justify-center`}>
-                    <span className="text-white text-xl">⭐</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{stats.reliabilityScore.toFixed(1)}%</span>
-                </div>
-                <h3 className="text-gray-700 font-semibold mb-1">Reliability Score</h3>
-                <p className="text-gray-600 text-sm">{getReliabilityLabel(stats.reliabilityScore)}</p>
-              </div>
-
-              {/* Total Shifts */}
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-xl">📅</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{stats.totalShifts}</span>
-                </div>
-                <h3 className="text-gray-700 font-semibold mb-1">Total Shifts</h3>
-                <p className="text-gray-600 text-sm">{stats.completedShifts} completed</p>
-              </div>
-
-              {/* Total Earnings */}
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-xl">💰</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">${stats.totalEarnings.toFixed(0)}</span>
-                </div>
-                <h3 className="text-gray-700 font-semibold mb-1">Total Earnings</h3>
-                <p className="text-gray-600 text-sm">All time</p>
-              </div>
-
-              {/* Average Rating */}
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-xl">⭐</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{stats.averageRating.toFixed(1)}</span>
-                </div>
-                <h3 className="text-gray-700 font-semibold mb-1">Average Rating</h3>
-                <p className="text-gray-600 text-sm">From managers</p>
-              </div>
+        {/* Enhanced Content */}
+        <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-2xl relative overflow-hidden group">
+          {/* Subtle form glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          
+          {loading ? (
+            <div className="flex items-center justify-center py-20 relative z-10">
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-[#D5001C] rounded-full animate-spin"></div>
             </div>
+          ) : (
+            <div className="relative z-10">
+              {activeTab === 'overview' && (
+                <div className="space-y-8">
+                  {/* Enhanced Stats Grid */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-2 border-blue-200/50 rounded-2xl p-6 text-center backdrop-blur-sm">
+                      <div className="text-3xl mb-2">📊</div>
+                      <div className="text-2xl font-bold text-blue-600">{stats.totalShifts}</div>
+                      <div className="text-sm font-medium text-gray-600">Total Shifts</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-2 border-green-200/50 rounded-2xl p-6 text-center backdrop-blur-sm">
+                      <div className="text-3xl mb-2">✅</div>
+                      <div className="text-2xl font-bold text-green-600">{stats.completedShifts}</div>
+                      <div className="text-sm font-medium text-gray-600">Completed</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border-2 border-yellow-200/50 rounded-2xl p-6 text-center backdrop-blur-sm">
+                      <div className="text-3xl mb-2">💰</div>
+                      <div className="text-2xl font-bold text-yellow-600">${stats.totalEarnings.toFixed(0)}</div>
+                      <div className="text-sm font-medium text-gray-600">Total Earnings</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-2 border-purple-200/50 rounded-2xl p-6 text-center backdrop-blur-sm">
+                      <div className="text-3xl mb-2">⭐</div>
+                      <div className="text-2xl font-bold text-purple-600">{stats.averageRating.toFixed(1)}</div>
+                      <div className="text-sm font-medium text-gray-600">Avg Rating</div>
+                    </div>
+                  </div>
 
-            {/* Performance Breakdown */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">📊</span>
-                  </div>
-                  Performance Breakdown
-                </h2>
-                
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Completed Shifts</span>
-                    <span className="text-gray-900 font-bold">{stats.completedShifts}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">No Shows</span>
-                    <span className="text-red-600 font-bold">{stats.noShows}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Weekend Shifts</span>
-                    <span className="text-gray-900 font-bold">{stats.weekendShifts}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Morning Shifts</span>
-                    <span className="text-gray-900 font-bold">{stats.morningShifts}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Night Shifts</span>
-                    <span className="text-gray-900 font-bold">{stats.nightShifts}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">🏆</span>
-                  </div>
-                  Recent Achievements
-                </h2>
-                
-                <div className="space-y-4">
-                  {earnedBadges.slice(0, 3).map((badge) => (
-                    <div key={badge.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                      <div className={`w-10 h-10 bg-gradient-to-r ${badge.color} rounded-lg flex items-center justify-center`}>
-                        <span className="text-white text-lg">{badge.icon}</span>
+                  {/* Enhanced Reliability Score */}
+                  <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 border-2 border-gray-200 rounded-2xl p-8 backdrop-blur-sm">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-xl flex items-center justify-center">
+                        <span className="text-white text-lg font-bold">🎯</span>
+                      </div>
+                      Reliability Score
+                    </h3>
+                    <div className="flex items-center gap-6">
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center">
+                          <div 
+                            className="w-20 h-20 rounded-full bg-gradient-to-r from-[#D5001C] to-[#B0001A] flex items-center justify-center text-white font-bold text-lg"
+                            style={{
+                              background: `conic-gradient(from 0deg, ${getReliabilityColor(stats.reliabilityScore)}, ${getReliabilityColor(stats.reliabilityScore)} ${stats.reliabilityScore * 3.6}deg, #e5e7eb ${stats.reliabilityScore * 3.6}deg, #e5e7eb 360deg)`
+                            }}
+                          >
+                            {stats.reliabilityScore.toFixed(0)}%
+                          </div>
+                        </div>
                       </div>
                       <div>
-                        <p className="text-gray-900 font-semibold">{badge.name}</p>
-                        <p className="text-gray-600 text-sm">{badge.description}</p>
+                        <div className="text-3xl font-bold text-gray-900 mb-2">{getReliabilityLabel(stats.reliabilityScore)}</div>
+                        <div className="text-gray-600 font-medium">Based on {stats.totalShifts} shifts completed</div>
                       </div>
                     </div>
-                  ))}
-                  {earnedBadges.length === 0 && (
-                    <p className="text-gray-500 text-center py-8">Complete shifts to earn achievements!</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+                  </div>
 
-        {/* Badges Tab */}
-        {activeTab === 'badges' && (
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">🏆</span>
-              </div>
-              Achievements & Badges
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {availableBadges.map((badge) => {
-                const isEarned = earnedBadges.some(earned => earned.id === badge.id)
-                return (
-                  <div
-                    key={badge.id}
-                    className={`p-6 rounded-2xl border transition-all duration-300 ${
-                      isEarned
-                        ? 'bg-white border-gray-200'
-                        : 'bg-gray-50 border-gray-200 opacity-50'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <div className={`w-16 h-16 bg-gradient-to-r ${badge.color} rounded-full flex items-center justify-center mx-auto mb-4 ${
-                        !isEarned && 'grayscale'
-                      }`}>
-                        <span className="text-white text-2xl">{badge.icon}</span>
+                  {/* Enhanced Badges Preview */}
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-xl flex items-center justify-center">
+                        <span className="text-white text-lg font-bold">🏆</span>
                       </div>
-                      <h3 className={`font-bold text-lg mb-2 ${
-                        isEarned ? 'text-gray-900' : 'text-gray-400'
-                      }`}>
-                        {badge.name}
-                      </h3>
-                      <p className={`text-sm ${
-                        isEarned ? 'text-gray-600' : 'text-gray-500'
-                      }`}>
-                        {badge.description}
-                      </p>
-                      {isEarned && (
-                        <div className="mt-3">
-                          <span className="bg-gradient-to-r from-green-400 to-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                            ✓ Earned
-                          </span>
+                      Recent Achievements
+                    </h3>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      {earnedBadges.slice(0, 4).map((badge) => (
+                        <div key={badge.id} className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 border-2 border-gray-200 rounded-2xl p-4 text-center backdrop-blur-sm hover:border-[#D5001C]/30 transition-all duration-300 group">
+                          <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">{badge.icon}</div>
+                          <div className="font-bold text-gray-900 mb-1">{badge.name}</div>
+                          <div className="text-xs text-gray-600">{badge.description}</div>
                         </div>
-                      )}
+                      ))}
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* History Tab */}
-        {activeTab === 'history' && (
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">📈</span>
-              </div>
-              Shift History
-            </h2>
-            
-            <div className="space-y-4">
-              {shifts.map((shift) => (
-                <div key={shift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-3 h-3 rounded-full ${
-                      shift.status === 'completed' ? 'bg-green-400' :
-                      shift.status === 'pending' ? 'bg-yellow-400' :
-                      shift.status === 'no-show' ? 'bg-red-400' :
-                      'bg-blue-400'
-                    }`}></div>
-                    <div>
-                      <p className="text-gray-900 font-medium">{shift.role}</p>
-                      <p className="text-gray-600 text-sm">{shift.date} • {shift.startTime} - {shift.endTime}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-gray-900 font-bold">${shift.payRate}/hr</p>
-                    <p className="text-gray-600 text-sm capitalize">{shift.status}</p>
-                    {shift.rating && (
-                      <div className="flex items-center gap-1 justify-end mt-1">
-                        <span className="text-yellow-400">⭐</span>
-                        <span className="text-gray-900 text-sm">{shift.rating}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
-              ))}
-              {shifts.length === 0 && (
-                <p className="text-gray-500 text-center py-8">No shifts completed yet</p>
+              )}
+
+              {activeTab === 'badges' && (
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-xl flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">🏆</span>
+                    </div>
+                    All Badges
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {availableBadges.map((badge) => {
+                      const isEarned = earnedBadges.some(earned => earned.id === badge.id)
+                      return (
+                        <div key={badge.id} className={`border-2 rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 group ${
+                          isEarned 
+                            ? 'bg-gradient-to-br from-gray-50/80 to-gray-100/80 border-[#D5001C]/30 hover:border-[#D5001C]/50' 
+                            : 'bg-gray-50/50 border-gray-200 opacity-60'
+                        }`}>
+                          <div className="text-center">
+                            <div className={`text-4xl mb-3 group-hover:scale-110 transition-transform duration-300 ${
+                              isEarned ? '' : 'grayscale'
+                            }`}>
+                              {badge.icon}
+                            </div>
+                            <div className={`font-bold text-lg mb-2 ${
+                              isEarned ? 'text-gray-900' : 'text-gray-500'
+                            }`}>
+                              {badge.name}
+                            </div>
+                            <div className={`text-sm ${
+                              isEarned ? 'text-gray-600' : 'text-gray-400'
+                            }`}>
+                              {badge.description}
+                            </div>
+                            {isEarned && (
+                              <div className="mt-3">
+                                <span className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white text-xs font-bold px-3 py-1 rounded-full">
+                                  Earned
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'history' && (
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-xl flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">📅</span>
+                    </div>
+                    Shift History
+                  </h3>
+                  <div className="space-y-4">
+                    {shifts.map((shift) => (
+                      <div key={shift.id} className="bg-gray-50/80 backdrop-blur-sm border-2 border-gray-200 rounded-2xl p-6 hover:border-[#D5001C]/30 transition-all duration-300 group">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#D5001C] transition-colors duration-300">{shift.role}</h4>
+                            <div className="flex items-center gap-6 text-gray-600 mb-2">
+                              <span className="flex items-center gap-2">
+                                <span>📅</span>
+                                <span className="font-bold">{shift.date}</span>
+                              </span>
+                              <span className="flex items-center gap-2">
+                                <span>⏰</span>
+                                <span className="font-bold">{shift.startTime} - {shift.endTime}</span>
+                              </span>
+                            </div>
+                            {shift.notes && (
+                              <p className="text-gray-600 text-sm bg-white/50 rounded-xl p-3">
+                                📝 {shift.notes}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white text-sm font-bold px-3 py-1 rounded-full">
+                              ${shift.payRate}/hr
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${
+                              shift.status === 'completed' 
+                                ? 'bg-green-100/80 text-green-700 border-green-200' 
+                                : shift.status === 'pending'
+                                ? 'bg-yellow-100/80 text-yellow-700 border-yellow-200'
+                                : 'bg-gray-100/80 text-gray-700 border-gray-200'
+                            }`}>
+                              {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
+                            </div>
+                            {shift.rating && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-yellow-500">⭐</span>
+                                <span className="text-sm font-bold text-gray-700">{shift.rating}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   )

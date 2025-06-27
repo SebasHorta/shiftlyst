@@ -152,47 +152,65 @@ export default function TemplatesPage() {
 
   return (
     <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
-      {/* Porsche-style subtle background */}
+      {/* Enhanced Porsche-style background with animated particles */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
+        
+        {/* Animated floating particles */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        
+        {/* Additional subtle particles */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
+        
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
+              {/* Animated glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
               {/* Logo design - stylized "S" with shift arrow */}
               <div className="relative z-10 flex items-center justify-center">
                 <div className="relative">
-                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  <div className="text-white font-bold text-2xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
                   {/* Shift arrow overlay */}
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
                 </div>
               </div>
-              {/* Geometric accents */}
-              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
-              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
+              {/* Enhanced geometric accents */}
+              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
+              <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
+              <h1 className="text-5xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 ShiftLyst Templates
               </h1>
-              <p className="text-gray-300 text-lg font-light tracking-wide">Save time with reusable shift patterns</p>
+              <p className="text-gray-300 text-xl font-light tracking-wide mb-1">Save time with reusable shift patterns</p>
+              <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">Smart Automation • Efficiency Tools</p>
             </div>
           </div>
           <div className="flex gap-4">
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-[#D5001C] hover:bg-[#B0001A] text-white font-semibold px-8 py-4 rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300 tracking-wide"
+              className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] hover:from-[#B0001A] hover:to-[#8B0015] text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 tracking-wide"
             >
               {showCreateForm ? 'Cancel' : 'Create Template'}
             </button>
             <button
               onClick={() => router.push('/manager')}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
+              className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-2xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-bold tracking-wide transform hover:scale-[1.02]"
             >
               Back to Dashboard
             </button>

@@ -121,112 +121,147 @@ export default function AnalyticsPage() {
 
   return (
     <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
-      {/* Porsche-style subtle background */}
+      {/* Enhanced Porsche-style background with animated particles */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
+        
+        {/* Animated floating particles */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        
+        {/* Additional subtle particles */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
+        
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
+              {/* Animated glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
               {/* Logo design - stylized "S" with shift arrow */}
               <div className="relative z-10 flex items-center justify-center">
                 <div className="relative">
-                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  <div className="text-white font-bold text-2xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
                   {/* Shift arrow overlay */}
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
                 </div>
               </div>
-              {/* Geometric accents */}
-              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
-              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
+              {/* Enhanced geometric accents */}
+              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
+              <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
+              <h1 className="text-5xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 ShiftLyst Analytics
               </h1>
-              <p className="text-gray-300 text-lg font-light tracking-wide">Real-time business insights</p>
+              <p className="text-gray-300 text-xl font-light tracking-wide mb-1">Real-time business insights</p>
+              <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">Performance Metrics • Business Intelligence</p>
             </div>
           </div>
           <button
             onClick={() => router.push('/manager')}
-            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
+            className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-2xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-bold tracking-wide transform hover:scale-[1.02]"
           >
             Back to Dashboard
           </button>
         </div>
 
-        {/* Time Range Selector */}
-        <div className="mb-12">
+        {/* Enhanced Time Range Selector */}
+        <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl mb-8">
           <div className="flex gap-2">
-            {(['week', 'month', 'quarter'] as const).map((range) => (
+            {[
+              { id: 'week', label: 'This Week', icon: '📅' },
+              { id: 'month', label: 'This Month', icon: '📊' },
+              { id: 'quarter', label: 'This Quarter', icon: '📈' }
+            ].map((range) => (
               <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 tracking-wide ${
-                  timeRange === range
-                    ? 'bg-[#D5001C] text-white shadow-md'
-                    : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
+                key={range.id}
+                onClick={() => setTimeRange(range.id as any)}
+                className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-bold transition-all duration-300 ${
+                  timeRange === range.id
+                    ? 'bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white shadow-lg'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-[#D5001C]'
                 }`}
               >
-                {range.charAt(0).toUpperCase() + range.slice(1)}
+                <span className="text-lg">{range.icon}</span>
+                <span>{range.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Key Metrics Grid */}
+        {/* Enhanced Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Shifts */}
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">📅</span>
+          <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">📅</span>
+                </div>
+                <span className="text-3xl font-bold text-gray-900">{analytics.totalShifts}</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{analytics.totalShifts}</span>
+              <h3 className="text-gray-700 font-bold mb-1">Total Shifts</h3>
+              <p className="text-gray-600 text-sm font-medium">All time</p>
             </div>
-            <h3 className="text-gray-700 font-semibold mb-1">Total Shifts</h3>
-            <p className="text-gray-600 text-sm">All time</p>
           </div>
 
           {/* Completed Shifts */}
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">✅</span>
+          <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">✅</span>
+                </div>
+                <span className="text-3xl font-bold text-gray-900">{analytics.completedShifts}</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{analytics.completedShifts}</span>
+              <h3 className="text-gray-700 font-bold mb-1">Completed</h3>
+              <p className="text-gray-600 text-sm font-medium">Successfully finished</p>
             </div>
-            <h3 className="text-gray-700 font-semibold mb-1">Completed</h3>
-            <p className="text-gray-600 text-sm">{((analytics.completedShifts / analytics.totalShifts) * 100).toFixed(1)}% success rate</p>
           </div>
 
-          {/* Labor Cost */}
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">💰</span>
+          {/* Total Labor Cost */}
+          <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">💰</span>
+                </div>
+                <span className="text-3xl font-bold text-gray-900">${analytics.totalLaborCost.toFixed(0)}</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">${analytics.totalLaborCost.toFixed(0)}</span>
+              <h3 className="text-gray-700 font-bold mb-1">Labor Cost</h3>
+              <p className="text-gray-600 text-sm font-medium">Total paid out</p>
             </div>
-            <h3 className="text-gray-700 font-semibold mb-1">Total Labor Cost</h3>
-            <p className="text-gray-600 text-sm">Completed shifts only</p>
           </div>
 
           {/* Reliability Score */}
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">⭐</span>
+          <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl">⭐</span>
+                </div>
+                <span className="text-3xl font-bold text-gray-900">{analytics.reliabilityScore.toFixed(0)}%</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{analytics.reliabilityScore.toFixed(1)}%</span>
+              <h3 className="text-gray-700 font-bold mb-1">Reliability</h3>
+              <p className="text-gray-600 text-sm font-medium">Completion rate</p>
             </div>
-            <h3 className="text-gray-700 font-semibold mb-1">Reliability Score</h3>
-            <p className="text-gray-600 text-sm">Team performance</p>
           </div>
         </div>
 
