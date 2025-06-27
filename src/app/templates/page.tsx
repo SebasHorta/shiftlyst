@@ -142,7 +142,7 @@ export default function TemplatesPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black p-6 relative overflow-hidden">
+      <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D5001C]"></div>
         </div>
@@ -151,11 +151,11 @@ export default function TemplatesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black p-6 relative overflow-hidden">
-      {/* Porsche-style background */}
+    <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
+      {/* Porsche-style subtle background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
       </div>
 
@@ -163,26 +163,36 @@ export default function TemplatesPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-[#D5001C] rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-2xl font-bold text-white tracking-tight">📋</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+              {/* Logo design - stylized "S" with shift arrow */}
+              <div className="relative z-10 flex items-center justify-center">
+                <div className="relative">
+                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  {/* Shift arrow overlay */}
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                </div>
+              </div>
+              {/* Geometric accents */}
+              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
+              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
-                Shift Templates
+                ShiftLyst Templates
               </h1>
-              <p className="text-gray-400 text-lg font-light tracking-wide">Save time with reusable shift patterns</p>
+              <p className="text-gray-300 text-lg font-light tracking-wide">Save time with reusable shift patterns</p>
             </div>
           </div>
           <div className="flex gap-4">
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-[#D5001C] hover:bg-[#B0001A] text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 tracking-wide"
+              className="bg-[#D5001C] hover:bg-[#B0001A] text-white font-semibold px-8 py-4 rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300 tracking-wide"
             >
               {showCreateForm ? 'Cancel' : 'Create Template'}
             </button>
             <button
               onClick={() => router.push('/manager')}
-              className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-semibold tracking-wide"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
             >
               Back to Dashboard
             </button>
@@ -191,8 +201,8 @@ export default function TemplatesPage() {
 
         {/* Create Template Form */}
         {showCreateForm && (
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm">+</span>
               </div>
@@ -201,8 +211,8 @@ export default function TemplatesPage() {
 
             <form onSubmit={handleCreateTemplate} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                     Template Name
                   </label>
                   <input
@@ -211,12 +221,12 @@ export default function TemplatesPage() {
                     value={templateName}
                     onChange={e => setTemplateName(e.target.value)}
                     required
-                    className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                     Role
                   </label>
                   <input
@@ -225,14 +235,14 @@ export default function TemplatesPage() {
                     value={role}
                     onChange={e => setRole(e.target.value)}
                     required
-                    className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
                   />
                 </div>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                     Start Time
                   </label>
                   <input
@@ -240,12 +250,12 @@ export default function TemplatesPage() {
                     value={startTime}
                     onChange={e => setStartTime(e.target.value)}
                     required
-                    className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                     End Time
                   </label>
                   <input
@@ -253,12 +263,12 @@ export default function TemplatesPage() {
                     value={endTime}
                     onChange={e => setEndTime(e.target.value)}
                     required
-                    className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                     Pay Rate ($/hr)
                   </label>
                   <input
@@ -267,7 +277,7 @@ export default function TemplatesPage() {
                     step={0.01}
                     value={payRate}
                     onChange={e => setPayRate(parseFloat(e.target.value))}
-                    className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
                     required
                   />
                 </div>
@@ -281,9 +291,9 @@ export default function TemplatesPage() {
                     id="includesTips"
                     checked={includesTips}
                     onChange={e => setIncludesTips(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 bg-white/90 border border-white/20 rounded focus:ring-2 focus:ring-blue-400/30 focus:ring-offset-0"
+                    className="w-5 h-5 text-[#D5001C] bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-[#D5001C]/20 focus:ring-offset-0"
                   />
-                  <label htmlFor="includesTips" className="text-sm font-medium text-gray-300">
+                  <label htmlFor="includesTips" className="text-sm font-medium text-gray-700">
                     Includes tips
                   </label>
                 </div>
@@ -294,9 +304,9 @@ export default function TemplatesPage() {
                     id="bonusAvailable"
                     checked={bonusAvailable}
                     onChange={e => setBonusAvailable(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 bg-white/90 border border-white/20 rounded focus:ring-2 focus:ring-blue-400/30 focus:ring-offset-0"
+                    className="w-5 h-5 text-[#D5001C] bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-[#D5001C]/20 focus:ring-offset-0"
                   />
-                  <label htmlFor="bonusAvailable" className="text-sm font-medium text-gray-300">
+                  <label htmlFor="bonusAvailable" className="text-sm font-medium text-gray-700">
                     Bonus available
                   </label>
                 </div>
@@ -307,17 +317,17 @@ export default function TemplatesPage() {
                     id="overtimePay"
                     checked={overtimePay}
                     onChange={e => setOvertimePay(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 bg-white/90 border border-white/20 rounded focus:ring-2 focus:ring-blue-400/30 focus:ring-offset-0"
+                    className="w-5 h-5 text-[#D5001C] bg-gray-50 border border-gray-200 rounded focus:ring-1 focus:ring-[#D5001C]/20 focus:ring-offset-0"
                   />
-                  <label htmlFor="overtimePay" className="text-sm font-medium text-gray-300">
+                  <label htmlFor="overtimePay" className="text-sm font-medium text-gray-700">
                     Overtime pay
                   </label>
                 </div>
               </div>
 
               {/* Days of Week */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                   Days of Week
                 </label>
                 <div className="grid grid-cols-7 gap-2">
@@ -328,8 +338,8 @@ export default function TemplatesPage() {
                       onClick={() => toggleDay(day.value)}
                       className={`p-3 rounded-lg border transition-all duration-300 ${
                         selectedDays.includes(day.value)
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 border-blue-400 text-white'
-                          : 'bg-white/10 border-white/20 text-gray-300 hover:bg-white/20'
+                          ? 'bg-[#D5001C] border-[#D5001C] text-white'
+                          : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-[#D5001C]/30'
                       }`}
                     >
                       {day.label.slice(0, 3)}
@@ -338,22 +348,22 @@ export default function TemplatesPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                   Notes (Optional)
                 </label>
                 <textarea
                   placeholder="e.g., Bring POS key, wear uniform"
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  className="w-full bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-gray-900 placeholder-gray-600 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all duration-300 resize-none"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300 resize-none"
                   rows={3}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+                className="w-full bg-[#D5001C] hover:bg-[#B0001A] text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300"
               >
                 Create Template
               </button>
@@ -362,8 +372,8 @@ export default function TemplatesPage() {
         )}
 
         {/* Templates List */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
               <span className="text-white text-sm">📋</span>
             </div>
@@ -372,18 +382,18 @@ export default function TemplatesPage() {
 
           {templates.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-gray-500/20 to-gray-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-gray-400 text-2xl">📋</span>
               </div>
-              <p className="text-gray-400">No templates created yet</p>
-              <p className="text-gray-500 text-sm mt-1">Create your first template to save time</p>
+              <p className="text-gray-500">No templates created yet</p>
+              <p className="text-gray-400 text-sm mt-1">Create your first template to save time</p>
             </div>
           ) : (
             <div className="grid gap-6">
               {templates.map((template) => (
                 <div
                   key={template.id}
-                  className="bg-white/90 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white transition-all duration-300"
+                  className="bg-gray-50 border border-gray-200 rounded-2xl p-6 hover:border-[#D5001C]/30 transition-all duration-300"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
@@ -414,18 +424,18 @@ export default function TemplatesPage() {
                     <div className="flex flex-col items-end gap-3">
                       {/* Pay Display */}
                       <div className="text-right">
-                        <div className="bg-gradient-to-r from-green-400 to-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-full mb-2">
+                        <div className="bg-[#D5001C] text-white text-sm font-semibold px-3 py-1 rounded-full mb-2">
                           ${template.payRate.toFixed(2)}/hr{template.includesTips ? ' + tips' : ''}
                         </div>
                         {(template.bonusAvailable || template.overtimePay) && (
                           <div className="flex gap-1 justify-end">
                             {template.bonusAvailable && (
-                              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                              <span className="bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1 rounded-full">
                                 💰 Bonus
                               </span>
                             )}
                             {template.overtimePay && (
-                              <span className="bg-gradient-to-r from-purple-400 to-pink-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                              <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-1 rounded-full">
                                 ⏰ OT
                               </span>
                             )}
@@ -440,13 +450,13 @@ export default function TemplatesPage() {
                             // TODO: Implement use template functionality
                             alert('Use template functionality coming soon!')
                           }}
-                          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 text-sm"
+                          className="bg-[#D5001C] hover:bg-[#B0001A] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300 text-sm"
                         >
                           Use Template
                         </button>
                         <button
                           onClick={() => handleDeleteTemplate(template.id)}
-                          className="bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-red-300 px-4 py-2 rounded-lg hover:bg-red-500/30 transition-all duration-300 text-sm"
+                          className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-all duration-300 text-sm"
                         >
                           Delete
                         </button>

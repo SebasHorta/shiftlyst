@@ -55,11 +55,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Porsche-style background */}
+    <main className="min-h-screen bg-gray-900 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Porsche-style subtle background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
       </div>
 
@@ -67,59 +67,72 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-lg">
         {/* Logo/Brand section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-[#D5001C] rounded-full shadow-2xl mb-8">
-            <span className="text-4xl font-bold text-white tracking-tight">S</span>
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-3xl shadow-xl mb-8 relative overflow-hidden">
+            {/* Main logo design */}
+            <div className="relative z-10 flex items-center justify-center">
+              {/* Stylized "S" with shift arrow */}
+              <div className="relative">
+                <div className="text-white font-bold text-3xl tracking-tight">S</div>
+                {/* Shift arrow overlay */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-white transform rotate-45"></div>
+              </div>
+            </div>
+            {/* Geometric accents */}
+            <div className="absolute top-2 right-2 w-3 h-3 bg-white/20 rounded-full"></div>
+            <div className="absolute bottom-2 left-2 w-2 h-2 bg-white/15 rounded-full"></div>
+            <div className="absolute top-1/2 left-1 w-1 h-1 bg-white/10 rounded-full transform -translate-y-1/2"></div>
+            <div className="absolute top-1/2 right-1 w-1 h-1 bg-white/10 rounded-full transform -translate-y-1/2"></div>
           </div>
-          <h1 className="text-6xl font-bold text-white mb-4 tracking-tight">
-            Shifty
+          <h1 className="text-5xl font-bold text-white mb-3 tracking-tight">
+            ShiftLyst
           </h1>
-          <p className="text-gray-400 text-xl font-light tracking-wide">Shift Management Reimagined</p>
+          <p className="text-gray-300 text-lg font-light tracking-wide">Shift Management Reimagined</p>
         </div>
 
         {/* Porsche-style login form */}
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl p-10 shadow-2xl">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-10 shadow-xl">
           {/* Role Selection */}
-          <div className="mb-10">
-            <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest mb-6 block">
+          <div className="mb-8">
+            <label className="text-sm font-medium text-gray-700 uppercase tracking-wider mb-4 block">
               I am a...
             </label>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
                 onClick={() => setSelectedRole('manager')}
-                className={`p-8 rounded-xl border-2 transition-all duration-300 ${
+                className={`p-6 rounded-xl border transition-all duration-300 ${
                   selectedRole === 'manager'
-                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-lg'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#D5001C]/30 hover:bg-gray-50'
+                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-md'
+                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-[#D5001C]/30'
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-4xl mb-4">👔</div>
-                  <div className="font-bold text-lg mb-2">Manager</div>
-                  <div className="text-sm opacity-80">Post & manage shifts</div>
+                  <div className="text-3xl mb-3">👔</div>
+                  <div className="font-semibold text-lg">Manager</div>
+                  <div className="text-sm opacity-80 mt-1">Post & manage shifts</div>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole('staff')}
-                className={`p-8 rounded-xl border-2 transition-all duration-300 ${
+                className={`p-6 rounded-xl border transition-all duration-300 ${
                   selectedRole === 'staff'
-                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-lg'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#D5001C]/30 hover:bg-gray-50'
+                    ? 'bg-[#D5001C] border-[#D5001C] text-white shadow-md'
+                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-[#D5001C]/30'
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-4xl mb-4">💼</div>
-                  <div className="font-bold text-lg mb-2">Staff</div>
-                  <div className="text-sm opacity-80">Find & accept shifts</div>
+                  <div className="text-3xl mb-3">💼</div>
+                  <div className="font-semibold text-lg">Staff</div>
+                  <div className="text-sm opacity-80 mt-1">Find & accept shifts</div>
                 </div>
               </button>
             </div>
           </div>
 
-          <form onSubmit={handleEmailLogin} className="space-y-8">
-            <div className="space-y-4">
-              <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest">
+          <form onSubmit={handleEmailLogin} className="space-y-6">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                 Email Address
               </label>
               <input
@@ -128,12 +141,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl p-5 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 transition-all duration-300 text-lg"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
               />
             </div>
 
-            <div className="space-y-4">
-              <label className="text-sm font-semibold text-gray-600 uppercase tracking-widest">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700 uppercase tracking-wider">
                 Password
               </label>
               <input
@@ -142,44 +155,44 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl p-5 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 transition-all duration-300 text-lg"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-1 focus:ring-[#D5001C]/20 transition-all duration-300"
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                <p className="text-red-600 text-sm font-medium">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-[#D5001C] hover:bg-[#B0001A] text-white font-bold py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 text-lg tracking-wide"
+              className="w-full bg-[#D5001C] hover:bg-[#B0001A] text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300"
             >
               Sign In as {selectedRole === 'manager' ? 'Manager' : 'Staff'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="flex items-center my-10">
-            <div className="flex-1 border-t-2 border-gray-200"></div>
-            <span className="px-6 text-gray-500 text-sm font-semibold uppercase tracking-widest">or</span>
-            <div className="flex-1 border-t-2 border-gray-200"></div>
+          <div className="flex items-center my-8">
+            <div className="flex-1 border-t border-gray-200"></div>
+            <span className="px-4 text-gray-500 text-sm font-medium">or</span>
+            <div className="flex-1 border-t border-gray-200"></div>
           </div>
 
           {/* Google sign-in */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full bg-white border-2 border-gray-200 rounded-xl p-5 text-gray-700 font-semibold hover:border-[#D5001C]/30 hover:bg-gray-50 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-4 text-lg"
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-700 font-medium hover:bg-gray-100 transform hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-3"
           >
-            <img src="/google-logo.svg" alt="Google" className="h-6 w-6" />
+            <img src="/google-logo.svg" alt="Google" className="h-5 w-5" />
             Sign in with Google
           </button>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12">
-          <p className="text-gray-500 text-sm font-light tracking-wide">
+        <div className="text-center mt-8">
+          <p className="text-gray-400 text-sm">
             © 2024 Shifty. Premium shift management for modern teams.
           </p>
         </div>

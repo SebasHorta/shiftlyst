@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black p-6 relative overflow-hidden">
+      <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D5001C]"></div>
         </div>
@@ -120,11 +120,11 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black p-6 relative overflow-hidden">
-      {/* Porsche-style background */}
+    <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
+      {/* Porsche-style subtle background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
       </div>
 
@@ -132,19 +132,29 @@ export default function AnalyticsPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-[#D5001C] rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-2xl font-bold text-white tracking-tight">📊</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+              {/* Logo design - stylized "S" with shift arrow */}
+              <div className="relative z-10 flex items-center justify-center">
+                <div className="relative">
+                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  {/* Shift arrow overlay */}
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                </div>
+              </div>
+              {/* Geometric accents */}
+              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
+              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
-                Analytics Dashboard
+                ShiftLyst Analytics
               </h1>
-              <p className="text-gray-400 text-lg font-light tracking-wide">Real-time business insights</p>
+              <p className="text-gray-300 text-lg font-light tracking-wide">Real-time business insights</p>
             </div>
           </div>
           <button
             onClick={() => router.push('/manager')}
-            className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-semibold tracking-wide"
+            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
           >
             Back to Dashboard
           </button>
@@ -157,10 +167,10 @@ export default function AnalyticsPage() {
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 tracking-wide ${
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 tracking-wide ${
                   timeRange === range
-                    ? 'bg-[#D5001C] text-white shadow-lg'
-                    : 'bg-white/10 text-gray-300 hover:bg-white/20 border-2 border-white/20'
+                    ? 'bg-[#D5001C] text-white shadow-md'
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
                 }`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -172,59 +182,59 @@ export default function AnalyticsPage() {
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Shifts */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">📅</span>
               </div>
-              <span className="text-2xl font-bold text-white">{analytics.totalShifts}</span>
+              <span className="text-2xl font-bold text-gray-900">{analytics.totalShifts}</span>
             </div>
-            <h3 className="text-gray-300 font-semibold mb-1">Total Shifts</h3>
-            <p className="text-gray-400 text-sm">All time</p>
+            <h3 className="text-gray-700 font-semibold mb-1">Total Shifts</h3>
+            <p className="text-gray-600 text-sm">All time</p>
           </div>
 
           {/* Completed Shifts */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">✅</span>
               </div>
-              <span className="text-2xl font-bold text-white">{analytics.completedShifts}</span>
+              <span className="text-2xl font-bold text-gray-900">{analytics.completedShifts}</span>
             </div>
-            <h3 className="text-gray-300 font-semibold mb-1">Completed</h3>
-            <p className="text-gray-400 text-sm">{((analytics.completedShifts / analytics.totalShifts) * 100).toFixed(1)}% success rate</p>
+            <h3 className="text-gray-700 font-semibold mb-1">Completed</h3>
+            <p className="text-gray-600 text-sm">{((analytics.completedShifts / analytics.totalShifts) * 100).toFixed(1)}% success rate</p>
           </div>
 
           {/* Labor Cost */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">💰</span>
               </div>
-              <span className="text-2xl font-bold text-white">${analytics.totalLaborCost.toFixed(0)}</span>
+              <span className="text-2xl font-bold text-gray-900">${analytics.totalLaborCost.toFixed(0)}</span>
             </div>
-            <h3 className="text-gray-300 font-semibold mb-1">Total Labor Cost</h3>
-            <p className="text-gray-400 text-sm">Completed shifts only</p>
+            <h3 className="text-gray-700 font-semibold mb-1">Total Labor Cost</h3>
+            <p className="text-gray-600 text-sm">Completed shifts only</p>
           </div>
 
           {/* Reliability Score */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center">
                 <span className="text-white text-xl">⭐</span>
               </div>
-              <span className="text-2xl font-bold text-white">{analytics.reliabilityScore.toFixed(1)}%</span>
+              <span className="text-2xl font-bold text-gray-900">{analytics.reliabilityScore.toFixed(1)}%</span>
             </div>
-            <h3 className="text-gray-300 font-semibold mb-1">Reliability Score</h3>
-            <p className="text-gray-400 text-sm">Team performance</p>
+            <h3 className="text-gray-700 font-semibold mb-1">Reliability Score</h3>
+            <p className="text-gray-600 text-sm">Team performance</p>
           </div>
         </div>
 
         {/* Detailed Analytics */}
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Shift Status Breakdown */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm">📊</span>
               </div>
@@ -241,11 +251,11 @@ export default function AnalyticsPage() {
                 <div key={item.status} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-4 h-4 bg-gradient-to-r ${getStatusColor(item.status)} rounded-full`}></div>
-                    <span className="text-gray-300 font-medium">{item.label}</span>
+                    <span className="text-gray-700 font-medium">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-bold">{item.count}</span>
-                    <span className="text-gray-400 text-sm">
+                    <span className="text-gray-900 font-bold">{item.count}</span>
+                    <span className="text-gray-600 text-sm">
                       ({((item.count / analytics.totalShifts) * 100).toFixed(1)}%)
                     </span>
                   </div>
@@ -255,8 +265,8 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Pay Insights */}
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm">💰</span>
               </div>
@@ -265,31 +275,31 @@ export default function AnalyticsPage() {
             
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Average Pay Rate</span>
-                <span className="text-white font-bold">${analytics.averagePayRate.toFixed(2)}/hr</span>
+                <span className="text-gray-700">Average Pay Rate</span>
+                <span className="text-gray-900 font-bold">${analytics.averagePayRate.toFixed(2)}/hr</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Shifts with Tips</span>
-                <span className="text-white font-bold">{analytics.shiftsWithTips}</span>
+                <span className="text-gray-700">Shifts with Tips</span>
+                <span className="text-gray-900 font-bold">{analytics.shiftsWithTips}</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Urgent Shifts</span>
-                <span className="text-white font-bold">{analytics.urgentShifts}</span>
+                <span className="text-gray-700">Urgent Shifts</span>
+                <span className="text-gray-900 font-bold">{analytics.urgentShifts}</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">No Shows</span>
-                <span className="text-red-400 font-bold">{analytics.noShows}</span>
+                <span className="text-gray-700">No Shows</span>
+                <span className="text-red-600 font-bold">{analytics.noShows}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="mt-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <div className="mt-8 bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
               <span className="text-white text-sm">📈</span>
             </div>
@@ -298,17 +308,17 @@ export default function AnalyticsPage() {
           
           <div className="space-y-4">
             {shifts.slice(0, 5).map((shift) => (
-              <div key={shift.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+              <div key={shift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center gap-4">
                   <div className={`w-3 h-3 bg-gradient-to-r ${getStatusColor(shift.status)} rounded-full`}></div>
                   <div>
-                    <p className="text-white font-medium">{shift.role}</p>
-                    <p className="text-gray-400 text-sm">{shift.date} • {shift.startTime} - {shift.endTime}</p>
+                    <p className="text-gray-900 font-medium">{shift.role}</p>
+                    <p className="text-gray-600 text-sm">{shift.date} • {shift.startTime} - {shift.endTime}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-bold">${shift.payRate}/hr</p>
-                  <p className="text-gray-400 text-sm capitalize">{shift.status}</p>
+                  <p className="text-gray-900 font-bold">${shift.payRate}/hr</p>
+                  <p className="text-gray-600 text-sm capitalize">{shift.status}</p>
                 </div>
               </div>
             ))}

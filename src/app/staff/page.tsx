@@ -25,6 +25,7 @@ interface Shift {
   includesTips: boolean
   bonusAvailable: boolean
   overtimePay: boolean
+  hidePay: boolean
   notes: string
   status: 'open' | 'pending' | 'confirmed'
   assignedTo?: string
@@ -71,6 +72,7 @@ export default function StaffPage() {
             includesTips: data.includesTips || false,
             bonusAvailable: data.bonusAvailable || false,
             overtimePay: data.overtimePay || false,
+            hidePay: data.hidePay || false,
             notes: data.notes,
             status: data.status || 'open',
             assignedTo: data.assignedTo,
@@ -109,6 +111,7 @@ export default function StaffPage() {
             includesTips: data.includesTips || false,
             bonusAvailable: data.bonusAvailable || false,
             overtimePay: data.overtimePay || false,
+            hidePay: data.hidePay || false,
             notes: data.notes,
             status: data.status || 'open',
             assignedTo: data.assignedTo,
@@ -150,11 +153,11 @@ export default function StaffPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black p-6 relative overflow-hidden">
-      {/* Porsche-style background */}
+    <main className="min-h-screen bg-gray-950 p-6 relative overflow-hidden">
+      {/* Porsche-style subtle background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-gray-900 to-black"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
       </div>
 
@@ -162,19 +165,29 @@ export default function StaffPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-[#D5001C] rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-2xl font-bold text-white tracking-tight">S</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+              {/* Logo design - stylized "S" with shift arrow */}
+              <div className="relative z-10 flex items-center justify-center">
+                <div className="relative">
+                  <div className="text-white font-bold text-xl tracking-tight">S</div>
+                  {/* Shift arrow overlay */}
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45"></div>
+                </div>
+              </div>
+              {/* Geometric accents */}
+              <div className="absolute top-1 right-1 w-2 h-2 bg-white/20 rounded-full"></div>
+              <div className="absolute bottom-1 left-1 w-1 h-1 bg-white/15 rounded-full"></div>
             </div>
             <div>
               <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
-                Available Shifts
+                ShiftLyst Staff
               </h1>
-              <p className="text-gray-400 text-lg font-light tracking-wide">Find and claim your next shift</p>
+              <p className="text-gray-300 text-lg font-light tracking-wide">Find and claim your next shift</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-semibold tracking-wide"
+            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-medium tracking-wide"
           >
             Logout
           </button>
@@ -182,7 +195,7 @@ export default function StaffPage() {
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Available Shifts */}
-          <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl p-10 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-10 shadow-xl">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-4">
               <div className="w-10 h-10 bg-[#D5001C] rounded-xl flex items-center justify-center">
                 <span className="text-white text-lg font-bold">💼</span>
@@ -207,7 +220,7 @@ export default function StaffPage() {
                 {shifts.map((shift) => (
                   <div
                     key={shift.id}
-                    className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 hover:border-[#D5001C]/30 transition-all duration-300"
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:border-[#D5001C]/30 transition-all duration-300"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
@@ -231,9 +244,11 @@ export default function StaffPage() {
                       </div>
                       
                       <div className="flex flex-col items-end gap-3">
-                        <div className="bg-[#D5001C] text-white text-sm font-bold px-4 py-2 rounded-full">
-                          ${shift.payRate.toFixed(2)}/hr
-                        </div>
+                        {!shift.hidePay && (
+                          <div className="bg-[#D5001C] text-white text-sm font-bold px-4 py-2 rounded-full">
+                            ${shift.payRate.toFixed(2)}/hr
+                          </div>
+                        )}
                         <div className="flex gap-2">
                           {shift.includesTips && (
                             <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
@@ -253,7 +268,7 @@ export default function StaffPage() {
                         </div>
                         <button
                           onClick={() => handleAcceptShift(shift.id)}
-                          className="bg-[#D5001C] hover:bg-[#B0001A] text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 text-sm"
+                          className="bg-[#D5001C] hover:bg-[#B0001C] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-300 text-sm"
                         >
                           Accept Shift
                         </button>
@@ -266,7 +281,7 @@ export default function StaffPage() {
           </div>
 
           {/* My Shifts */}
-          <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl p-10 shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-10 shadow-xl">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-4">
               <div className="w-10 h-10 bg-[#D5001C] rounded-xl flex items-center justify-center">
                 <span className="text-white text-lg font-bold">👤</span>
@@ -287,7 +302,7 @@ export default function StaffPage() {
                 {myShifts.map((shift) => (
                   <div
                     key={shift.id}
-                    className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 hover:border-[#D5001C]/30 transition-all duration-300"
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:border-[#D5001C]/30 transition-all duration-300"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
@@ -311,9 +326,11 @@ export default function StaffPage() {
                       </div>
                       
                       <div className="flex flex-col items-end gap-3">
-                        <div className="bg-[#D5001C] text-white text-sm font-bold px-4 py-2 rounded-full">
-                          ${shift.payRate.toFixed(2)}/hr
-                        </div>
+                        {!shift.hidePay && (
+                          <div className="bg-[#D5001C] text-white text-sm font-bold px-4 py-2 rounded-full">
+                            ${shift.payRate.toFixed(2)}/hr
+                          </div>
+                        )}
                         <div className="flex gap-2">
                           {shift.includesTips && (
                             <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
