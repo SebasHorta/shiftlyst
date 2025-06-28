@@ -13,7 +13,10 @@ import {
   doc,
   Timestamp,
   orderBy,
+  arrayUnion,
+  increment,
 } from 'firebase/firestore'
+import Image from 'next/image'
 
 interface Shift {
   id: string
@@ -78,6 +81,21 @@ function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number)
   return hours * 60 + minutes
 }
+
+// Reusable Logo Component
+const ShiftLystLogo = ({ size = 50, className = '' }: { size?: number; className?: string }) => (
+  <div className={`relative ${className} overflow-hidden`} style={{ width: size, height: size }}>
+    <Image
+      src="/assets/shiftlyst_logo2.png"
+      alt="ShiftLyst Logo"
+      width={size}
+      height={size}
+      className="object-cover rounded-lg scale-125"
+      style={{ objectPosition: 'center' }}
+      priority
+    />
+  </div>
+)
 
 export default function StaffPage() {
   const router = useRouter()
@@ -344,25 +362,10 @@ export default function StaffPage() {
         {/* Enhanced Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
-              {/* Animated glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Logo design - stylized "S" with shift arrow */}
-              <div className="relative z-10 flex items-center justify-center">
-                <div className="relative">
-                  <div className="text-white font-bold text-2xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
-                  {/* Shift arrow overlay */}
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
-                </div>
-              </div>
-              {/* Enhanced geometric accents */}
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
-              <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
-            </div>
+            <ShiftLystLogo size={60} className="mr-0" />
             <div>
-              <h1 className="text-5xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                ShiftLyst Staff
+              <h1 className="text-5xl font-black text-white mb-3 tracking-tight">
+                Shift<span className="text-[#D5001C]">Lyst</span> Staff
               </h1>
               <p className="text-gray-300 text-xl font-light tracking-wide mb-1">Find and claim your next shift</p>
               <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">Premium Opportunities • Real-time Updates</p>

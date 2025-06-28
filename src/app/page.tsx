@@ -10,278 +10,229 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from 'firebase/auth'
+import Link from 'next/link'
+import Image from 'next/image'
 
-// Custom ShiftLyst Logo Component
-const ShiftLystLogo = ({ size = 80, className = '' }: { size?: number; className?: string }) => (
-  <div className={`relative ${className}`} style={{ width: size, height: size }}>
-    {/* Main logo container */}
-    <div className="w-full h-full bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
-      {/* Animated glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      
-      {/* Main logo design */}
-      <div className="relative z-10 flex items-center justify-center w-full h-full">
-        {/* Stylized "S" with shift arrow */}
-        <div className="relative">
-          <div className="text-white font-bold text-3xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
-          {/* Shift arrow overlay */}
-          <div className="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
-        </div>
-      </div>
-      
-      {/* Enhanced geometric accents */}
-      <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
-      <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
-      <div className="absolute top-1/2 left-0.5 w-0.5 h-0.5 bg-white/10 rounded-full transform -translate-y-1/2 group-hover:bg-white/20 transition-colors duration-300"></div>
-      <div className="absolute top-1/2 right-0.5 w-0.5 h-0.5 bg-white/10 rounded-full transform -translate-y-1/2 group-hover:bg-white/20 transition-colors duration-300"></div>
-    </div>
+// Reusable Logo Component
+const ShiftLystLogo = ({ size = 50, className = '' }: { size?: number; className?: string }) => (
+  <div className={`relative ${className} overflow-hidden`} style={{ width: size, height: size }}>
+    <Image
+      src="/assets/shiftlyst_logo2.png"
+      alt="ShiftLyst Logo"
+      width={size}
+      height={size}
+      className="object-cover rounded-lg scale-125"
+      style={{ objectPosition: 'center' }}
+      priority
+    />
   </div>
 )
 
-export default function LoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [selectedRole, setSelectedRole] = useState<'manager' | 'staff'>('manager')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+const benefits = [
+  {
+    title: 'Fill Shifts Instantly',
+    description: 'No more frantic calls or emails. Instantly broadcast open shifts to your entire staff and fill them in seconds.',
+    icon: '⚡️',
+  },
+  {
+    title: 'Empower Your Team',
+    description: 'Staff can view, claim, and manage their shifts from anywhere. Total transparency, total control.',
+    icon: '🤝',
+  },
+  {
+    title: 'Seamless Scheduling',
+    description: 'Automated reminders, smart conflict detection, and a beautiful calendar view make managing shifts a breeze.',
+    icon: '📅',
+  },
+  {
+    title: 'Secure & Reliable',
+    description: 'Enterprise-grade security and 99.99% uptime. Your data is safe, your team is always connected.',
+    icon: '🔒',
+  },
+]
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      if (user) {
-        // Route based on selected role
-        if (selectedRole === 'manager') {
-          router.push('/manager')
-        } else {
-          router.push('/staff')
-        }
-      }
-    })
-    return unsubscribe
-  }, [router, selectedRole])
+const testimonials = [
+  {
+    quote: 'ShiftLyst transformed how we manage our staff. Filling last-minute shifts is now effortless!',
+    name: 'Sarah M.',
+    role: 'HR Manager, MedCare',
+  },
+  {
+    quote: 'Our team loves the transparency and flexibility. No more confusion or missed shifts!',
+    name: 'James T.',
+    role: 'Restaurant Owner',
+  },
+]
 
-  async function handleEmailLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      // Role routing is handled in useEffect
-    } catch (err: any) {
-      setError(err.message)
-      setIsLoading(false)
-    }
-  }
-
-  async function handleGoogleLogin() {
-    setError('')
-    setIsGoogleLoading(true)
-    try {
-      const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-      // Role routing is handled in useEffect
-    } catch (err: any) {
-      setError(err.message)
-      setIsGoogleLoading(false)
-    }
-  }
-
+export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-gray-900 flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Enhanced Porsche-style background with animated particles */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
-        
-        {/* Animated floating particles */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D5001C]/4 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        
-        {/* Additional subtle particles */}
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#D5001C]/2 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
-        
-        {/* Subtle grid pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="w-full h-full" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-      </div>
-
-      {/* Main login container */}
-      <div className="relative z-10 w-full max-w-lg">
-        {/* Enhanced Logo/Brand section */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <ShiftLystLogo size={80} className="transform hover:scale-105 transition-transform duration-300" />
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center">
+              <ShiftLystLogo size={50} className="mr-0" />
+              <h1 className="text-2xl font-black text-gray-900 tracking-tight">ShiftLyst</h1>
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link href="/login">
+                <button className="bg-[#D5001C] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#B0001A] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                  Sign In
+                </button>
+              </Link>
+            </div>
           </div>
-          
-          {/* Enhanced Typography */}
-          <div className="space-y-2">
-            <h1 className="text-5xl font-black text-white tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-              Shift<span className="text-[#D5001C]">Lyst</span>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50 overflow-hidden">
+        {/* Subtle background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-[#D5001C]/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#D5001C]/3 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-5xl mx-auto px-6 lg:px-8 text-center">
+          <div className="mb-8">
+            <h1 className="text-6xl md:text-7xl font-black text-gray-900 mb-6 tracking-tight leading-tight">
+              Fill Shifts.
+              <br />
+              <span className="text-[#D5001C]">Fast.</span>
             </h1>
-            <div className="flex items-center justify-center gap-2 text-gray-400 text-xs font-bold tracking-widest uppercase">
-              <span className="w-8 h-px bg-gradient-to-r from-transparent to-gray-400"></span>
-              <span>Premium Shift Management</span>
-              <span className="w-8 h-px bg-gradient-to-l from-transparent to-gray-400"></span>
-            </div>
+            <p className="text-2xl text-gray-600 mb-10 max-w-3xl mx-auto font-light leading-relaxed">
+              The modern platform for effortless shift management. Empower your team, eliminate chaos, and fill every shift—instantly.
+            </p>
           </div>
           
-          {/* Tagline */}
-          <p className="text-gray-300 text-lg font-light tracking-wide mt-3 mb-2">
-            Fill shifts. Fast.
-          </p>
-          
-          {/* Brand attributes */}
-          <div className="flex items-center justify-center gap-4 text-gray-400 text-xs font-medium tracking-wider uppercase">
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-[#D5001C] rounded-full"></div>
-              Secure
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-[#D5001C] rounded-full"></div>
-              Efficient
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-[#D5001C] rounded-full"></div>
-              Reliable
-            </span>
+          <div className="flex flex-col items-center gap-4">
+            <Link href="/login">
+              <button className="bg-[#D5001C] text-white px-10 py-4 rounded-2xl text-xl font-bold hover:bg-[#B0001A] transition-all duration-500 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                Get Started
+              </button>
+            </Link>
+            <div className="text-gray-500 text-sm font-medium">
+              Trusted by 10,000+ businesses
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Enhanced Porsche-style login form */}
-        <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
-          {/* Subtle form glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          {/* Role Selection */}
-          <div className="mb-6 relative z-10">
-            <label className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4 block">
-              I am a...
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setSelectedRole('manager')}
-                className={`p-6 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] ${
-                  selectedRole === 'manager'
-                    ? 'bg-gradient-to-br from-[#D5001C] to-[#B0001A] border-[#D5001C] text-white shadow-lg shadow-[#D5001C]/25'
-                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100/80 hover:border-[#D5001C]/40 hover:shadow-lg'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-3xl mb-2">👔</div>
-                  <div className="font-bold text-lg mb-1">Manager</div>
-                  <div className="text-xs opacity-90 font-medium">Post & manage shifts</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRole('staff')}
-                className={`p-6 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] ${
-                  selectedRole === 'staff'
-                    ? 'bg-gradient-to-br from-[#D5001C] to-[#B0001A] border-[#D5001C] text-white shadow-lg shadow-[#D5001C]/25'
-                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100/80 hover:border-[#D5001C]/40 hover:shadow-lg'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-3xl mb-2">💼</div>
-                  <div className="font-bold text-lg mb-1">Staff</div>
-                  <div className="text-xs opacity-90 font-medium">Find & accept shifts</div>
-                </div>
-              </button>
-            </div>
+      {/* Benefits Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">Why ShiftLyst?</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
+              Designed for the modern workforce. Built for results.
+            </p>
           </div>
-
-          <form onSubmit={handleEmailLogin} className="space-y-5 relative z-10">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
-              />
-            </div>
-
-            {error && (
-              <div className="bg-red-50/80 border-2 border-red-200 rounded-xl p-4 backdrop-blur-sm">
-                <p className="text-red-600 text-sm font-medium">{error}</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="group bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">{benefit.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#D5001C] transition-colors duration-300">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-[#D5001C] to-[#B0001A] hover:from-[#B0001A] hover:to-[#8B0015] text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.01] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Signing In...</span>
-                </div>
-              ) : (
-                <span>Sign In as {selectedRole === 'manager' ? 'Manager' : 'Staff'}</span>
-              )}
-              {/* Button glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-            </button>
-          </form>
-
-          {/* Enhanced Divider */}
-          <div className="flex items-center my-6 relative z-10">
-            <div className="flex-1 border-t-2 border-gray-200/50"></div>
-            <span className="px-4 text-gray-500 text-sm font-bold tracking-widest uppercase">or</span>
-            <div className="flex-1 border-t-2 border-gray-200/50"></div>
+            ))}
           </div>
-
-          {/* Enhanced Google sign-in */}
-          <button
-            onClick={handleGoogleLogin}
-            disabled={isGoogleLoading}
-            className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-xl p-4 text-gray-700 font-bold hover:bg-gray-100/80 hover:border-[#D5001C]/30 transform hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative z-10"
-          >
-            {isGoogleLoading ? (
-              <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-600 rounded-full animate-spin"></div>
-            ) : (
-              <img src="/google-logo.svg" alt="Google" className="h-5 w-5" />
-            )}
-            <span>{isGoogleLoading ? 'Signing In...' : 'Sign in with Google'}</span>
-          </button>
         </div>
+      </section>
 
-        {/* Enhanced Footer */}
-        <div className="text-center mt-6">
-          <p className="text-gray-400 text-xs font-medium tracking-wide">
-            © 2024 ShiftLyst. Premium shift management for modern teams.
-          </p>
-          <p className="text-gray-500 text-xs mt-1 tracking-wider uppercase">
-            Enterprise-grade security • 99.9% uptime
-             {/* • 24/7 support */}
-          </p>
+      {/* How It Works Section */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">How It Works</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
+              Simple. Efficient. Powerful.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="bg-gradient-to-br from-[#D5001C] to-[#B0001A] text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-black shadow-xl group-hover:scale-110 transition-transform duration-300">1</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Managers</h3>
+              <p className="text-gray-600 leading-relaxed">Post open shifts, set requirements, and instantly notify your team.</p>
+            </div>
+            <div className="text-center group">
+              <div className="bg-gradient-to-br from-[#D5001C] to-[#B0001A] text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-black shadow-xl group-hover:scale-110 transition-transform duration-300">2</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Staff</h3>
+              <p className="text-gray-600 leading-relaxed">Browse, claim, and manage shifts from any device, anywhere.</p>
+            </div>
+            <div className="text-center group">
+              <div className="bg-gradient-to-br from-[#D5001C] to-[#B0001A] text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-black shadow-xl group-hover:scale-110 transition-transform duration-300">3</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Done!</h3>
+              <p className="text-gray-600 leading-relaxed">Shifts are filled, everyone is notified, and your schedule stays organized.</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-black text-gray-900 mb-4 tracking-tight">What Our Users Say</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
+              Real results from real businesses.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1">
+                <div className="text-2xl text-[#D5001C] mb-4">"</div>
+                <p className="text-gray-700 text-lg leading-relaxed mb-6 italic font-light">"{testimonial.quote}"</p>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl flex items-center justify-center text-white font-bold text-lg mr-4 shadow-lg">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 text-lg">{testimonial.name}</div>
+                    <div className="text-gray-500">{testimonial.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-br from-[#D5001C] to-[#B0001A] relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative max-w-5xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Ready to Transform Your Staffing?</h2>
+          <p className="text-2xl text-red-100 mb-8 font-light">Join thousands of businesses that trust ShiftLyst</p>
+          <Link href="/login">
+            <button className="bg-white text-[#D5001C] px-12 py-5 rounded-2xl text-xl font-bold hover:bg-gray-50 transition-all duration-500 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+              Start Free Trial
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 bg-gray-900">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-6">
+              <ShiftLystLogo size={50} className="mr-0" />
+              <h3 className="text-xl font-black text-white">ShiftLyst</h3>
+            </div>
+            <p className="text-gray-400 font-light">
+              &copy; {new Date().getFullYear()} ShiftLyst. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { auth , db } from './../lib/firebase'
 import { signOut } from 'firebase/auth'
-import { useAuth } from './../lib/useAuth'
+import { useAuth } from './../contexts/AuthContext'
 import {
   collection,
   addDoc,
@@ -17,6 +17,7 @@ import {
   doc,
   updateDoc,
 } from 'firebase/firestore'
+import Image from 'next/image'
 
 interface Shift {
   id: string
@@ -61,9 +62,24 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options)
 }
 
+// Reusable Logo Component
+const ShiftLystLogo = ({ size = 50, className = '' }: { size?: number; className?: string }) => (
+  <div className={`relative ${className} overflow-hidden`} style={{ width: size, height: size }}>
+    <Image
+      src="/assets/shiftlyst_logo2.png"
+      alt="ShiftLyst Logo"
+      width={size}
+      height={size}
+      className="object-cover rounded-lg scale-125"
+      style={{ objectPosition: 'center' }}
+      priority
+    />
+  </div>
+)
+
 export default function ManagerDashboardPage() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading } = useAuth()
 
   const [role, setRole] = useState('')
   const [date, setDate] = useState('')
@@ -77,7 +93,7 @@ export default function ManagerDashboardPage() {
   const [notes, setNotes] = useState('')
   const [slots, setSlots] = useState(1)
   const [shifts, setShifts] = useState<Shift[]>([])
-  const [loading, setLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
@@ -108,26 +124,25 @@ export default function ManagerDashboardPage() {
     'Manager'
   ]
 
-  const shiftsRef = useRef<(() => void) | null>(null)
-
   useEffect(() => {
     console.log('=== MANAGER PAGE MOUNTED ===')
-    console.log('User state:', user ? `logged in: ${user.uid}` : 'not logged in')
+    console.log('Auth loading:', loading, 'User:', user ? `logged in: ${user.uid}` : 'not logged in')
     
-    // Only proceed if user is authenticated
-    if (!user) {
-      console.log('No user, not setting up Firebase listener')
+    // Wait for auth to be determined
+    if (loading) {
+      console.log('Waiting for auth to be determined...')
       return
     }
     
-    // Prevent multiple listeners
-    if (shiftsRef.current) {
-      console.log('Firebase listener already exists, skipping setup')
+    // Check if user is authenticated
+    if (!user) {
+      console.log('No user, redirecting to login')
+      router.push('/')
       return
     }
     
     console.log('User authenticated, setting up Firebase listener...')
-    
+
     // Listen for shifts collection changes
     const q = query(
       collection(db, 'shifts'),
@@ -170,26 +185,21 @@ export default function ManagerDashboardPage() {
         
         console.log(`Setting ${shiftsData.length} shifts to state`)
         setShifts(shiftsData)
-        setLoading(false)
+        setDataLoading(false)
         console.log('Loading set to false, shifts should be visible now')
       },
       err => {
         console.error('Firebase query error:', err)
         setError('Failed to load shifts: ' + err.message)
-        setLoading(false)
+        setDataLoading(false)
       }
     )
 
-    shiftsRef.current = unsubscribeShifts
-
     return () => {
       console.log('Cleaning up Firebase listener')
-      if (shiftsRef.current) {
-        shiftsRef.current()
-        shiftsRef.current = null
-      }
+      unsubscribeShifts()
     }
-  }, [user]) // Only depend on user - this is the key fix!
+  }, [loading, user, router])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -204,14 +214,6 @@ export default function ManagerDashboardPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Handle redirect when no user is authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      console.log('No authenticated user, redirecting to login')
-      router.push('/')
-    }
-  }, [authLoading, user, router])
-
   // Monitor shifts state changes
   useEffect(() => {
     console.log(`Shifts state changed: ${shifts.length} shifts`)
@@ -222,8 +224,8 @@ export default function ManagerDashboardPage() {
 
   // Monitor loading state changes
   useEffect(() => {
-    console.log(`Loading state changed: ${loading}`)
-  }, [loading])
+    console.log(`Loading state changed: ${dataLoading}`)
+  }, [dataLoading])
 
   async function handleAddShift(e: React.FormEvent) {
     e.preventDefault()
@@ -418,8 +420,8 @@ export default function ManagerDashboardPage() {
 
   async function handleLogout() {
     try {
-      await signOut(auth)
-      router.push('/')
+    await signOut(auth)
+    router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
     }
@@ -475,37 +477,22 @@ export default function ManagerDashboardPage() {
         {/* Enhanced Header */}
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#D5001C] to-[#B0001A] rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden group hover:shadow-[#D5001C]/25 transition-all duration-500">
-              {/* Animated glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Logo design - stylized "S" with shift arrow */}
-              <div className="relative z-10 flex items-center justify-center">
-                <div className="relative">
-                  <div className="text-white font-bold text-2xl tracking-tight group-hover:scale-110 transition-transform duration-300">S</div>
-                  {/* Shift arrow overlay */}
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t border-r border-white transform rotate-45 group-hover:scale-110 transition-transform duration-300"></div>
-                </div>
-              </div>
-              {/* Enhanced geometric accents */}
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300"></div>
-              <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 bg-white/15 rounded-full group-hover:bg-white/25 transition-colors duration-300"></div>
-            </div>
+            <ShiftLystLogo size={60} className="mr-0" />
             <div>
-              <h1 className="text-5xl font-bold text-white mb-3 tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                ShiftLyst Dashboard
+              <h1 className="text-5xl font-black text-white mb-3 tracking-tight">
+                Shift<span className="text-[#D5001C]">Lyst</span> Dashboard
               </h1>
               <p className="text-gray-300 text-xl font-light tracking-wide mb-1">Manage your team's shifts</p>
               <p className="text-gray-400 text-sm font-medium tracking-wider uppercase">Premium Management • Real-time Updates</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
+        <button
+          onClick={handleLogout}
             className="bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-8 py-4 rounded-2xl hover:bg-white/20 hover:border-[#D5001C]/30 transition-all duration-300 font-bold tracking-wide transform hover:scale-[1.02]"
-          >
-            Logout
-          </button>
-        </div>
+        >
+          Logout
+        </button>
+      </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-4 gap-6 mb-12">
@@ -546,13 +533,13 @@ export default function ManagerDashboardPage() {
                   Role
                 </label>
                 <div className="relative role-dropdown-container">
-                  <input
-                    type="text"
+        <input
+          type="text"
                     placeholder="e.g., Bartender, Server, Lifeguard"
-                    value={role}
-                    onChange={e => setRole(e.target.value)}
+          value={role}
+          onChange={e => setRole(e.target.value)}
                     onFocus={() => setShowRoleDropdown(true)}
-                    required
+          required
                     className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-2xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 pr-12 font-medium"
                   />
                   <button
@@ -592,10 +579,10 @@ export default function ManagerDashboardPage() {
                   <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
                     Date
                   </label>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
+        <input
+          type="date"
+          value={date}
+          onChange={e => setDate(e.target.value)}
                     onKeyUp={(e) => {
                       const target = e.target as HTMLInputElement;
                       if (target.value.length === 10) { // YYYY-MM-DD format
@@ -603,7 +590,7 @@ export default function ManagerDashboardPage() {
                         if (nextInput) nextInput.focus();
                       }
                     }}
-                    required
+          required
                     className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-2xl p-4 text-gray-900 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
                   />
                 </div>
@@ -643,10 +630,10 @@ export default function ManagerDashboardPage() {
                   <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
                     Start Time
                   </label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={e => setStartTime(e.target.value)}
+          <input
+            type="time"
+            value={startTime}
+            onChange={e => setStartTime(e.target.value)}
                     onKeyUp={(e) => {
                       const target = e.target as HTMLInputElement;
                       if (target.value.length === 5) { // HH:MM format
@@ -654,7 +641,7 @@ export default function ManagerDashboardPage() {
                         if (nextInput) nextInput.focus();
                       }
                     }}
-                    required
+            required
                     className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-2xl p-4 text-gray-900 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
                   />
                 </div>
@@ -663,11 +650,11 @@ export default function ManagerDashboardPage() {
                   <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
                     End Time
                   </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={e => setEndTime(e.target.value)}
-                    required
+          <input
+            type="time"
+            value={endTime}
+            onChange={e => setEndTime(e.target.value)}
+            required
                     className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-2xl p-4 text-gray-900 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
                   />
                 </div>
@@ -701,11 +688,11 @@ export default function ManagerDashboardPage() {
                   />
                   <span className="text-gray-700 font-bold group-hover:text-[#D5001C] transition-colors duration-300">Overtime</span>
                 </label>
-              </div>
+        </div>
 
               <div className="space-y-3">
                 <label className="flex items-center gap-3 p-4 bg-gray-50/80 border-2 border-gray-200 rounded-2xl hover:border-[#D5001C]/30 transition-all duration-300 cursor-pointer group">
-                  <input
+        <input
                     type="checkbox"
                     checked={hidePay}
                     onChange={e => setHidePay(e.target.checked)}
@@ -719,24 +706,24 @@ export default function ManagerDashboardPage() {
                 <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
                   Notes (Optional)
                 </label>
-                <textarea
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
+        <textarea
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
                   placeholder="Any additional details about this shift..."
-                  rows={3}
+          rows={3}
                   className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-2xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium resize-none"
-                />
+        />
               </div>
 
-              <button
-                type="submit"
+        <button
+          type="submit"
                 className="w-full bg-gradient-to-r from-[#D5001C] to-[#B0001A] hover:from-[#B0001A] hover:to-[#8B0015] text-white font-bold py-5 px-8 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.01] transition-all duration-300 relative overflow-hidden group"
-              >
+        >
                 <span>Create Shift</span>
                 {/* Button glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-              </button>
-            </form>
+        </button>
+      </form>
           </div>
 
           {/* Enhanced Shifts Management */}
@@ -900,7 +887,7 @@ export default function ManagerDashboardPage() {
                 </div>
               </div>
 
-              {loading || authLoading ? (
+              {dataLoading ? (
                 <div className="flex items-center justify-center py-12 relative z-10">
                   <div className="w-12 h-12 border-4 border-gray-200 border-t-[#D5001C] rounded-full animate-spin"></div>
                 </div>
@@ -916,7 +903,7 @@ export default function ManagerDashboardPage() {
                 <div className="space-y-6 max-h-96 overflow-y-auto relative z-10">
                   {sortShifts(shifts).map((shift) => (
                     <div
-                      key={shift.id}
+              key={shift.id}
                       className="bg-gradient-to-br from-gray-50/90 to-white/90 backdrop-blur-sm border-2 border-gray-200/80 rounded-3xl p-8 hover:border-[#D5001C]/40 hover:shadow-xl transition-all duration-300 group"
                     >
                       {/* Header with role and pay */}
