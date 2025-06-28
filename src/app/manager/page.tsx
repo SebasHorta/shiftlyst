@@ -2099,7 +2099,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading staff...</div>
-      </div>
+                  </div>
     )
   }
 
@@ -2109,7 +2109,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white">
         <h1 className="text-2xl font-bold text-white">Staff Directory</h1>
         <p className="text-orange-100">Manage your team members and their information</p>
-      </div>
+                            </div>
 
       {/* Controls */}
       <div className="bg-white rounded-xl p-6 shadow-lg">
@@ -2126,7 +2126,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
               />
               <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+                              </svg>
             </div>
 
             {/* Filters */}
@@ -2208,8 +2208,8 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                           <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-orange-800">
                               {member.firstName.charAt(0)}{member.lastName.charAt(0)}
-                            </span>
-                          </div>
+                              </span>
+                            </div>
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
@@ -2224,7 +2224,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                         {member.role}
-                      </span>
+                              </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{member.email}</div>
@@ -2260,9 +2260,9 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                 ))}
               </tbody>
             </table>
-          </div>
+                            </div>
         )}
-      </div>
+                          </div>
 
       {/* Add Staff Modal */}
       {showAddStaff && (
@@ -2276,13 +2276,13 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
               >
                 ✕
               </button>
-            </div>
+                          </div>
             
             <AddStaffForm 
               onSubmit={handleAddStaff}
               onCancel={() => setShowAddStaff(false)}
             />
-          </div>
+                        </div>
         </div>
       )}
 
@@ -2306,9 +2306,9 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
               onCancel={() => setSelectedStaff(null)}
             />
           </div>
-        </div>
-      )}
-    </div>
+                          </div>
+                        )}
+                      </div>
   )
 }
 
@@ -2419,7 +2419,7 @@ function AnalyticsTab({ shifts }: any) {
                 metric.changeType === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
               }`}>
                 {metric.change}
-              </span>
+                            </span>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-1">{metric.value}</h3>
             <p className="text-gray-700 text-sm font-medium">{metric.label}</p>
@@ -2493,7 +2493,7 @@ function AnalyticsTab({ shifts }: any) {
                             </div>
                     <span className="text-sm font-medium text-gray-900 w-12 text-right">
                       {percentage}%
-                              </span>
+                            </span>
                             </div>
                             </div>
               )
@@ -2516,8 +2516,8 @@ function AnalyticsTab({ shifts }: any) {
                           </div>
               <span className="font-bold text-gray-900">
                 {shifts.filter((s: any) => s.status === 'open').length}
-              </span>
-                      </div>
+                            </span>
+                        </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -2839,14 +2839,14 @@ function NotificationsTab() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-red-500">
           <div className="flex items-center justify-between">
-            <div>
+                            <div>
               <p className="text-gray-700 text-sm font-medium">Unread</p>
               <p className="text-3xl font-bold text-red-600">{unreadCount}</p>
-                    </div>
+                            </div>
             <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">🔔</span>
-            </div>
-          </div>
+                          </div>
+                        </div>
         </div>
         
         <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-orange-500">
@@ -2978,18 +2978,18 @@ function NotificationsTab() {
                   
                   <div className="flex items-center gap-2 ml-4">
                     {!notification.read && (
-                <button
+                        <button
                         onClick={() => markAsRead(notification.id)}
                         className="text-gray-400 hover:text-gray-600 p-1"
                         title="Mark as read"
-                >
+                        >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                </button>
+                        </button>
                     )}
                     
-                <button
+                        <button
                       onClick={() => deleteNotification(notification.id)}
                       className="text-gray-400 hover:text-red-600 p-1"
                       title="Delete notification"
@@ -3006,8 +3006,8 @@ function NotificationsTab() {
                   {notification.action === 'approve' && (
                     <>
                       <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors">
-                        Approve
-                      </button>
+                          Approve
+                        </button>
                       <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors">
                         Decline
                       </button>
@@ -3031,8 +3031,8 @@ function NotificationsTab() {
                       Dismiss
                     </button>
                   )}
-          </div>
-        </div>
+                      </div>
+                    </div>
             </div>
           ))
         )}
@@ -3144,8 +3144,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                 </button>
               ))}
             </nav>
-          </div>
-        </div>
+                </div>
+              </div>
 
         {/* Settings Content */}
         <div className="lg:col-span-3">
@@ -3163,11 +3163,11 @@ function SettingsTab({ timezone, setTimezone }: any) {
                       onChange={(e) => setBusinessName(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900"
                     />
-                  </div>
+                </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
-                    <select
+                  <select
                       value={timezone}
                       onChange={(e) => setTimezone(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
@@ -3192,8 +3192,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                       <option value="Europe/Warsaw">Warsaw (CET/CEST)</option>
                       <option value="Europe/Prague">Prague (CET/CEST)</option>
                       <option value="Europe/Budapest">Budapest (CET/CEST)</option>
-                    </select>
-                  </div>
+                  </select>
+                </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
@@ -3207,13 +3207,13 @@ function SettingsTab({ timezone, setTimezone }: any) {
                       <option value="GBP">GBP (£)</option>
                       <option value="CAD">CAD (C$)</option>
                     </select>
-                  </div>
+                </div>
                   
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900">Auto-approve shift requests</p>
                       <p className="text-sm text-gray-700">Automatically approve shift requests from trusted staff</p>
-                    </div>
+              </div>
                     <div className={`w-12 h-6 rounded-full relative transition-colors ${
                       autoApprove ? 'bg-[#D5001C]' : 'bg-gray-300'
                     }`}>
@@ -3246,34 +3246,34 @@ function SettingsTab({ timezone, setTimezone }: any) {
                         <div>
                           <p className="font-medium text-gray-900">Shift requests</p>
                           <p className="text-sm text-gray-700">When staff request to pick up shifts</p>
-                        </div>
+                </div>
                         <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
                           <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
+                  </div>
+                </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium text-gray-900">Low fill rate alerts</p>
                           <p className="text-sm text-gray-700">When shifts have low fill rates</p>
-                        </div>
+                            </div>
                         <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
                           <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
+                            </div>
+                            </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium text-gray-900">Weekly reports</p>
                           <p className="text-sm text-gray-700">Performance summaries and insights</p>
-                        </div>
+                          </div>
                         <div className="w-12 h-6 bg-gray-300 rounded-full relative">
                           <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                        </div>
+                            </div>
                       </div>
                     </div>
-                  </div>
-                  
+                        </div>
+                        
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Push Notifications</h3>
                     <div className="space-y-4">
@@ -3299,8 +3299,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+                          </div>
+                        )}
 
             {activeSection === 'security' && (
               <div className="space-y-6">
@@ -3327,8 +3327,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                         className="sr-only"
                       />
                     </div>
-                  </div>
-                  
+                      </div>
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
@@ -3470,8 +3470,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+                        </div>
+                      )}
 
             {activeSection === 'integrations' && (
               <div className="space-y-6">
@@ -3483,7 +3483,7 @@ function SettingsTab({ timezone, setTimezone }: any) {
                       <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold">Q</span>
                       </div>
-                      <div>
+                            <div>
                         <h3 className="font-medium text-gray-900">QuickBooks</h3>
                         <p className="text-sm text-gray-600">Sync payroll and accounting data</p>
                       </div>
@@ -3521,10 +3521,10 @@ function SettingsTab({ timezone, setTimezone }: any) {
                     <button className="px-4 py-2 bg-[#D5001C] hover:bg-[#B0001A] text-white rounded-lg font-medium transition-colors">
                       Connect
                     </button>
-                  </div>
-                </div>
-              </div>
-            )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
             {activeSection === 'billing' && (
               <div className="space-y-6">
@@ -3542,8 +3542,8 @@ function SettingsTab({ timezone, setTimezone }: any) {
                         <p className="text-red-100 text-sm">per month</p>
                       </div>
                     </div>
-                  </div>
-                  
+                        </div>
+                        
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
@@ -3559,7 +3559,7 @@ function SettingsTab({ timezone, setTimezone }: any) {
                         </div>
                         <button className="text-[#D5001C] hover:text-[#B0001A] font-medium">
                           Update
-                        </button>
+                            </button>
                       </div>
                     </div>
                     
@@ -3609,14 +3609,14 @@ function ProfileTab({ user, handleLogout }: any) {
           <p className="text-gray-600">Email</p>
           <p className="font-medium text-gray-600">{user?.email}</p>
         </div>
-        <button
+                            <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-        >
+                            >
           Logout
-        </button>
-      </div>
-    </div>
+                            </button>
+                        </div>
+                      </div>
   )
 }
 
@@ -3654,7 +3654,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-        </div>
+                    </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
           <input
@@ -3664,8 +3664,8 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-        </div>
-      </div>
+                </div>
+            </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -3676,7 +3676,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, email: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-      </div>
+          </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
@@ -3687,7 +3687,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, phone: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-      </div>
+        </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
@@ -3728,23 +3728,23 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, hireDate: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-      </div>
+              </div>
 
       <div className="flex gap-3 pt-4">
-        <button
+                <button
           type="button"
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-        >
-          Cancel
-        </button>
-        <button
+                >
+                  Cancel
+                </button>
+                <button
           type="submit"
           className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
         >
           Add Staff
-        </button>
-      </div>
+                </button>
+              </div>
     </form>
   )
 }
@@ -3780,7 +3780,7 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-        </div>
+            </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
           <input
@@ -3790,8 +3790,8 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
+          </div>
         </div>
-      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -3813,7 +3813,7 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
           onChange={(e) => setFormData({...formData, phone: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-      </div>
+              </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
@@ -3869,20 +3869,20 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
       </div>
 
       <div className="flex gap-3 pt-4">
-        <button
+                <button
           type="button"
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-        >
+                >
           Cancel
-        </button>
-        <button
+                </button>
+                <button
           type="submit"
           className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
         >
           Update Staff
-        </button>
-      </div>
+                </button>
+              </div>
     </form>
   )
 }
