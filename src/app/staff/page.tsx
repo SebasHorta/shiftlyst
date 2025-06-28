@@ -275,7 +275,7 @@ export default function StaffPage() {
                      err.code !== 'not-found' &&
                      !err.message?.includes('permission')) {
             // Only show error for unexpected failures
-            setError('Failed to load shifts')
+        setError('Failed to load shifts')
           }
         }
         setLoading(false)
@@ -605,7 +605,7 @@ export default function StaffPage() {
           {dayNames.map(day => (
             <div key={day} className="p-2 text-center text-sm font-bold text-gray-600">
               {day}
-            </div>
+      </div>
           ))}
           
           {/* Calendar days */}
@@ -638,8 +638,8 @@ export default function StaffPage() {
                           </div>
                         </div>
                       ))}
-                    </div>
-                  )}
+          </div>
+        )}
                 </>
               )}
             </div>
@@ -709,7 +709,7 @@ export default function StaffPage() {
               <div>
                 <p className="text-gray-600 text-sm font-medium">Total Shifts</p>
                 <p className="text-3xl font-bold text-gray-900">{shifts.length}</p>
-              </div>
+          </div>
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <span className="text-2xl">📋</span>
               </div>
@@ -718,13 +718,13 @@ export default function StaffPage() {
           
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
             <div className="flex items-center justify-between">
-              <div>
+            <div>
                 <p className="text-gray-600 text-sm font-medium">This Month</p>
                 <p className="text-3xl font-bold text-gray-900">${totalEarnings.toFixed(2)}</p>
-              </div>
+            </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <span className="text-2xl">💰</span>
-              </div>
+          </div>
             </div>
           </div>
           
@@ -766,13 +766,13 @@ export default function StaffPage() {
                 <p className="text-lg font-bold mt-2">${nextShift.payRate.toFixed(2)}/hr</p>
               </div>
               <div className="text-right">
-                <button
+          <button
                   onClick={() => openShiftModal(nextShift)}
                   className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-bold transition-colors"
-                >
+          >
                   View Details
-                </button>
-              </div>
+          </button>
+        </div>
             </div>
           </div>
         )}
@@ -791,7 +791,7 @@ export default function StaffPage() {
                   <div>
                     <p className="font-bold text-gray-900">{shift.role}</p>
                     <p className="text-gray-600">{formatDate(shift.date)} • {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</p>
-                  </div>
+              </div>
                   <div className="text-right">
                     <p className="font-bold text-gray-900">${shift.payRate.toFixed(2)}/hr</p>
                     <div className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -817,134 +817,134 @@ export default function StaffPage() {
   function AvailableShiftsTab({ shifts, sortBy, setSortBy, loading }: { shifts: Shift[], sortBy: string, setSortBy: (value: any) => void, loading: boolean }) {
     return (
       <div className="space-y-6">
-        {/* Sort Controls */}
+            {/* Sort Controls */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
-              Sort by:
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'closest' | 'date' | 'role')}
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
+                  Sort by:
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'closest' | 'date' | 'role')}
               className="bg-white border-2 border-gray-200 rounded-xl px-4 py-2 text-gray-900 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
-            >
-              <option value="closest">Closest Upcoming</option>
-              <option value="date">Date</option>
-              <option value="role">Role</option>
-            </select>
-          </div>
-          <div className="text-sm text-gray-500 font-medium">
-            {shifts.length} shift{shifts.length !== 1 ? 's' : ''} available
-          </div>
-        </div>
+                >
+                  <option value="closest">Closest Upcoming</option>
+                  <option value="date">Date</option>
+                  <option value="role">Role</option>
+                </select>
+              </div>
+              <div className="text-sm text-gray-500 font-medium">
+                {shifts.length} shift{shifts.length !== 1 ? 's' : ''} available
+              </div>
+            </div>
 
-        {loading ? (
+            {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-12 h-12 border-4 border-gray-200 border-t-[#D5001C] rounded-full animate-spin"></div>
-          </div>
-        ) : shifts.length === 0 ? (
+                <div className="w-12 h-12 border-4 border-gray-200 border-t-[#D5001C] rounded-full animate-spin"></div>
+              </div>
+            ) : shifts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-gray-400 text-3xl">🔍</span>
-            </div>
-            <p className="text-gray-600 text-xl font-bold mb-2">No shifts available</p>
+                  <span className="text-gray-400 text-3xl">🔍</span>
+                </div>
+                <p className="text-gray-600 text-xl font-bold mb-2">No shifts available</p>
             <p className="text-gray-400 text-sm">Check back later for new opportunities</p>
-          </div>
-        ) : (
+              </div>
+            ) : (
           <div className="grid gap-6">
-            {sortShifts(shifts).map((shift) => {
-              const conflictingShift = checkForConflicts(shift)
-              const hasConflict = conflictingShift !== null
-              
-              return (
-                <div
-                  key={shift.id}
+                {sortShifts(shifts).map((shift) => {
+                  const conflictingShift = checkForConflicts(shift)
+                  const hasConflict = conflictingShift !== null
+                  
+                  return (
+                    <div
+                      key={shift.id}
                   className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
                   onClick={() => openShiftModal(shift)}
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
+                        <div className="flex-1">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">{shift.role}</h3>
-                      <div className="flex items-center gap-4 text-gray-600">
+                          <div className="flex items-center gap-4 text-gray-600">
                         <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span className="font-semibold text-sm">{formatDate(shift.date)}</span>
-                        </div>
+                              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span className="font-semibold text-sm">{formatDate(shift.date)}</span>
+                            </div>
                         <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="font-semibold text-sm">
-                            {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
-                          </span>
+                              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="font-semibold text-sm">
+                                {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
+                        
+                        {!shift.hidePay && (
+                          <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white px-4 py-2 rounded-xl shadow-lg">
+                            <div className="text-xs font-medium opacity-90">Pay Rate</div>
+                            <div className="text-lg font-bold">${shift.payRate.toFixed(2)}/hr</div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    
-                    {!shift.hidePay && (
-                      <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white px-4 py-2 rounded-xl shadow-lg">
-                        <div className="text-xs font-medium opacity-90">Pay Rate</div>
-                        <div className="text-lg font-bold">${shift.payRate.toFixed(2)}/hr</div>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Benefits badges */}
-                  {(shift.includesTips || shift.bonusAvailable || shift.overtimePay) && (
+                      {/* Benefits badges */}
+                      {(shift.includesTips || shift.bonusAvailable || shift.overtimePay) && (
                     <div className="flex gap-2 mb-4">
-                      {shift.includesTips && (
+                          {shift.includesTips && (
                         <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-2 rounded-xl border border-green-200 flex items-center gap-1">
-                          <span>💰</span>
-                          <span>Tips Included</span>
-                        </span>
-                      )}
-                      {shift.bonusAvailable && (
+                              <span>💰</span>
+                              <span>Tips Included</span>
+                            </span>
+                          )}
+                          {shift.bonusAvailable && (
                         <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-2 rounded-xl border border-yellow-200 flex items-center gap-1">
-                          <span>🎁</span>
-                          <span>Bonus Available</span>
-                        </span>
-                      )}
-                      {shift.overtimePay && (
+                              <span>🎁</span>
+                              <span>Bonus Available</span>
+                            </span>
+                          )}
+                          {shift.overtimePay && (
                         <span className="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-2 rounded-xl border border-purple-200 flex items-center gap-1">
-                          <span>⏰</span>
-                          <span>Overtime Pay</span>
-                        </span>
+                              <span>⏰</span>
+                              <span>Overtime Pay</span>
+                            </span>
+                          )}
+                        </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Action button */}
-                  <div className="flex justify-end">
-                    <button
+                      {/* Action button */}
+                      <div className="flex justify-end">
+                        <button
                       onClick={(e) => {
                         e.stopPropagation()
                         handleAcceptShift(shift.id)
                       }}
-                      disabled={hasConflict || (shift.filledSlots || 0) >= (shift.slots || 1) || (shift.assignedStaff || []).includes(currentUser?.uid || '')}
-                      className={`font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-300 text-sm ${
-                        hasConflict || (shift.filledSlots || 0) >= (shift.slots || 1) || (shift.assignedStaff || []).includes(currentUser?.uid || '')
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-[#D5001C] to-[#B0001A] hover:from-[#B0001A] hover:to-[#8B0015] text-white hover:shadow-xl transform hover:scale-[1.02]'
-                      }`}
-                    >
-                      {hasConflict 
-                        ? 'Schedule Conflict' 
-                        : (shift.filledSlots || 0) >= (shift.slots || 1)
-                        ? 'All Positions Filled'
-                        : (shift.assignedStaff || []).includes(currentUser?.uid || '')
-                        ? 'Already Accepted'
-                        : 'Accept Shift'
-                      }
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
+                          disabled={hasConflict || (shift.filledSlots || 0) >= (shift.slots || 1) || (shift.assignedStaff || []).includes(currentUser?.uid || '')}
+                          className={`font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-300 text-sm ${
+                            hasConflict || (shift.filledSlots || 0) >= (shift.slots || 1) || (shift.assignedStaff || []).includes(currentUser?.uid || '')
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-gradient-to-r from-[#D5001C] to-[#B0001A] hover:from-[#B0001A] hover:to-[#8B0015] text-white hover:shadow-xl transform hover:scale-[1.02]'
+                          }`}
+                        >
+                          {hasConflict 
+                            ? 'Schedule Conflict' 
+                            : (shift.filledSlots || 0) >= (shift.slots || 1)
+                            ? 'All Positions Filled'
+                            : (shift.assignedStaff || []).includes(currentUser?.uid || '')
+                            ? 'Already Accepted'
+                            : 'Accept Shift'
+                          }
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
     )
   }
 
@@ -979,7 +979,7 @@ export default function StaffPage() {
               >
                 Calendar
               </button>
-            </div>
+              </div>
           </div>
           <div className="text-sm text-gray-500 font-medium">
             {shifts.length} shift{shifts.length !== 1 ? 's' : ''} scheduled
@@ -989,49 +989,49 @@ export default function StaffPage() {
         {shifts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-gray-400 text-3xl">📅</span>
-            </div>
+                  <span className="text-gray-400 text-3xl">📅</span>
+                </div>
             <p className="text-gray-600 text-xl font-bold mb-2">No shifts scheduled</p>
             <p className="text-gray-400 text-sm">Accept a shift from Available Shifts to get started</p>
-          </div>
+              </div>
         ) : viewMode === 'calendar' ? (
           <CalendarView shifts={shifts} />
-        ) : (
+            ) : (
           <div className="grid gap-6">
             {shifts.map((shift) => (
-              <div
-                key={shift.id}
+                  <div
+                    key={shift.id}
                 className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
                 onClick={() => openShiftModal(shift)}
-              >
+                  >
                 <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
+                      <div className="flex-1">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{shift.role}</h3>
-                    <div className="flex items-center gap-4 text-gray-600">
+                        <div className="flex items-center gap-4 text-gray-600">
                       <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span className="font-semibold text-sm">{formatDate(shift.date)}</span>
-                      </div>
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="font-semibold text-sm">{formatDate(shift.date)}</span>
+                          </div>
                       <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="font-semibold text-sm">
-                          {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
-                        </span>
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="font-semibold text-sm">
+                              {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
+                      
+                      {!shift.hidePay && (
+                        <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white px-4 py-2 rounded-xl shadow-lg">
+                          <div className="text-xs font-medium opacity-90">Pay Rate</div>
+                          <div className="text-lg font-bold">${shift.payRate.toFixed(2)}/hr</div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  
-                  {!shift.hidePay && (
-                    <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white px-4 py-2 rounded-xl shadow-lg">
-                      <div className="text-xs font-medium opacity-90">Pay Rate</div>
-                      <div className="text-lg font-bold">${shift.payRate.toFixed(2)}/hr</div>
-                    </div>
-                  )}
-                </div>
 
                 {/* Status badge */}
                 <div className="flex justify-end">
@@ -1471,8 +1471,8 @@ export default function StaffPage() {
                       Sign out
                     </button>
                   </div>
-                </div>
-              )}
+                      </div>
+                    )}
             </div>
           </div>
         </div>
@@ -1500,7 +1500,7 @@ export default function StaffPage() {
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+                          </svg>
           </button>
         </div>
       )}
@@ -1548,7 +1548,7 @@ export default function StaffPage() {
               {!selectedShift.hidePay && (
                 <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] text-white rounded-2xl p-6">
                   <div className="flex justify-between items-center">
-                    <div>
+                          <div>
                       <div className="text-sm font-medium opacity-90 mb-1">Pay Rate</div>
                       <div className="text-3xl font-bold">${selectedShift.payRate.toFixed(2)}/hr</div>
                     </div>
@@ -1557,10 +1557,10 @@ export default function StaffPage() {
                       <div className="text-2xl font-bold">
                         ${(selectedShift.payRate * (timeToMinutes(selectedShift.endTime) - timeToMinutes(selectedShift.startTime)) / 60).toFixed(2)}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
               {/* Benefits Section */}
               {(selectedShift.includesTips || selectedShift.bonusAvailable || selectedShift.overtimePay) && (
@@ -1577,17 +1577,17 @@ export default function StaffPage() {
                       <div className="bg-yellow-100 text-yellow-700 rounded-xl p-4 text-center">
                         <div className="text-2xl mb-2">🎁</div>
                         <div className="font-bold text-sm">Bonus Available</div>
-                      </div>
+                    </div>
                     )}
                     {selectedShift.overtimePay && (
                       <div className="bg-purple-100 text-purple-700 rounded-xl p-4 text-center">
                         <div className="text-2xl mb-2">⏰</div>
                         <div className="font-bold text-sm">Overtime Pay</div>
-                      </div>
+                  </div>
                     )}
                   </div>
-                </div>
-              )}
+              </div>
+            )}
 
               {/* Location Section */}
               {selectedShift.location && (
@@ -1600,7 +1600,7 @@ export default function StaffPage() {
                     Location
                   </h3>
                   <p className="text-gray-700 font-medium">{selectedShift.location}</p>
-                </div>
+          </div>
               )}
 
               {/* Manager Contact Section */}
@@ -1613,7 +1613,7 @@ export default function StaffPage() {
                     Manager Contact
                   </h3>
                   <p className="text-gray-700 font-medium">{selectedShift.managerContact}</p>
-                </div>
+        </div>
               )}
 
               {/* Notes Section */}
@@ -1626,7 +1626,7 @@ export default function StaffPage() {
                     Additional Notes
                   </h3>
                   <p className="text-gray-700 leading-relaxed">{selectedShift.notes}</p>
-                </div>
+      </div>
               )}
 
               {/* Availability Section */}

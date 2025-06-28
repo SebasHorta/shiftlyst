@@ -742,215 +742,244 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
   // Get today's date for filtering
   const today = new Date().toISOString().split('T')[0]
   const todaysShifts = shifts.filter((shift: any) => shift.date === today)
-  
-  // Get recent activity (last 5 shifts)
   const recentActivity = shifts.slice(0, 5)
-  
-  // Quick stats calculations
   const totalShifts = shifts.length
   const upcomingShifts = shifts.filter((shift: any) => shift.date > today).length
   const pastShifts = shifts.filter((shift: any) => shift.date < today).length
 
+  // For animated numbers (simple fade-in)
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => { setMounted(true) }, [])
+
+  // Security/Uptime indicator
+  const securityIndicators = [
+    { icon: '🔒', label: 'SOC 2' },
+    { icon: '⚡', label: '99.9% Uptime' },
+    { icon: '🛡️', label: 'Bank-level Security' },
+  ]
+
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between">
-            <div>
-            <h1 className="text-2xl font-bold mb-2">Welcome back, Manager!</h1>
-            <p className="text-red-100">Here's what's happening today</p>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-[#D5001C]/90 to-[#B0001A]/90 shadow-xl">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Welcome back, Manager!</h1>
+            <p className="text-red-100 text-lg font-light">Here's what's happening today</p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-4">
+              {securityIndicators.map((item, i) => (
+                <span key={i} className="flex items-center gap-1 text-white/80 text-xs font-semibold bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                  <span>{item.icon}</span> {item.label}
+                </span>
+              ))}
             </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold">{todaysShifts.length}</div>
-            <div className="text-red-100 text-sm">Today's Shifts</div>
+            <div className="text-right">
+              <div className={`text-4xl font-black transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>{todaysShifts.length}</div>
+              <div className="text-red-100 text-sm">Today's Shifts</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Open Shifts */}
+        <div className="group bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-blue-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-20 h-20 bg-blue-100 rounded-full blur-2xl opacity-60 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-700 text-sm font-medium">Open Shifts</p>
-              <p className="text-3xl font-bold text-blue-600">{openShifts.length}</p>
-              <p className="text-xs text-gray-600 mt-1">Ready to fill</p>
+              <p className="text-gray-700 text-sm font-medium flex items-center gap-1">Open Shifts <span className="ml-1" title="Shifts not yet filled">🛈</span></p>
+              <p className={`text-3xl font-black text-blue-600 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>{openShifts.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Ready to fill</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📋</span>
+            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+              <span className="text-2xl text-blue-600">📋</span>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-yellow-500">
+        {/* Pending */}
+        <div className="group bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-yellow-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-20 h-20 bg-yellow-100 rounded-full blur-2xl opacity-60 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-700 text-sm font-medium">Pending</p>
-              <p className="text-3xl font-bold text-yellow-600">{pendingShifts.length}</p>
-              <p className="text-xs text-gray-600 mt-1">Awaiting approval</p>
+              <p className="text-gray-700 text-sm font-medium flex items-center gap-1">Pending <span className="ml-1" title="Shifts awaiting approval">🛈</span></p>
+              <p className={`text-3xl font-black text-yellow-600 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>{pendingShifts.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Awaiting approval</p>
             </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">⏳</span>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">
+              <span className="text-2xl text-yellow-600">⏳</span>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
+        {/* Confirmed */}
+        <div className="group bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-green-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-20 h-20 bg-green-100 rounded-full blur-2xl opacity-60 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-700 text-sm font-medium">Confirmed</p>
-              <p className="text-3xl font-bold text-green-600">{confirmedShifts.length}</p>
-              <p className="text-xs text-gray-600 mt-1">Ready to go</p>
+              <p className="text-gray-700 text-sm font-medium flex items-center gap-1">Confirmed <span className="ml-1" title="Shifts ready to go">🛈</span></p>
+              <p className={`text-3xl font-black text-green-600 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>{confirmedShifts.length}</p>
+              <p className="text-xs text-gray-500 mt-1">Ready to go</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">✅</span>
+            <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+              <span className="text-2xl text-green-600">✅</span>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-[#D5001C]">
+        {/* Fill Rate */}
+        <div className="group bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-red-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-20 h-20 bg-red-100 rounded-full blur-2xl opacity-60 group-hover:scale-110 transition-transform"></div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-700 text-sm font-medium">Fill Rate</p>
-              <p className="text-3xl font-bold text-[#D5001C]">{fillRate}%</p>
-              <p className="text-xs text-gray-600 mt-1">Overall efficiency</p>
+              <p className="text-gray-700 text-sm font-medium flex items-center gap-1">Fill Rate <span className="ml-1" title="% of shifts filled">🛈</span></p>
+              <p className={`text-3xl font-black text-[#D5001C] transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>{fillRate}%</p>
+              <p className="text-xs text-gray-500 mt-1">Overall efficiency</p>
             </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📊</span>
+            <div className="w-12 h-12 bg-[#D5001C]/10 rounded-xl flex items-center justify-center">
+              <span className="text-2xl text-[#D5001C]">📊</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Today's Summary */}
-        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Today's Summary</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Today's Summary Timeline */}
+        <div className="lg:col-span-2 bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-gray-900">Today's Timeline</h3>
             <span className="text-sm text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
           </div>
-          
           {todaysShifts.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-gray-400">📅</span>
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl text-gray-400">📅</span>
               </div>
-              <p className="text-gray-600 font-medium">No shifts scheduled for today</p>
-              <p className="text-sm text-gray-500 mt-1">All clear!</p>
+              <p className="text-gray-600 font-semibold text-lg">No shifts scheduled for today</p>
+              <p className="text-sm text-gray-500 mt-2">All clear! Enjoy your day.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {todaysShifts.map((shift: any) => (
-                <div key={shift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-3 h-3 rounded-full ${
-                      shift.status === 'open' ? 'bg-blue-500' :
-                      shift.status === 'pending' ? 'bg-yellow-500' :
-                      'bg-green-500'
-                    }`} />
-                    <div>
-                      <p className="font-medium text-gray-900">{shift.role}</p>
-                      <p className="text-sm text-gray-600">{formatTime(shift.startTime)} - {formatTime(shift.endTime)}</p>
+            <ol className="relative border-l-4 border-[#D5001C]/20 ml-4 space-y-8">
+              {todaysShifts.map((shift: any, idx: number) => (
+                <li key={shift.id} className="ml-4 flex items-center gap-6 group">
+                  <span className={`absolute -left-6 w-6 h-6 rounded-full flex items-center justify-center border-4 ${
+                    shift.status === 'open' ? 'bg-blue-100 border-blue-400' :
+                    shift.status === 'pending' ? 'bg-yellow-100 border-yellow-400' :
+                    'bg-green-100 border-green-400'
+                  }`}>
+                    {shift.status === 'open' ? '📋' : shift.status === 'pending' ? '⏳' : '✅'}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-gray-900 text-lg">{shift.role}</p>
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ml-2 ${
+                        shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
+                        shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
+                      </span>
                     </div>
+                    <p className="text-gray-600 text-sm mt-1">{formatTime(shift.startTime)} - {formatTime(shift.endTime)} &bull; {shift.filledSlots}/{shift.slots} filled</p>
+                    {shift.notes && <p className="text-sm text-gray-600 mt-2 font-medium">"{shift.notes}"</p>}
                   </div>
                   <div className="text-right">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                      shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {shift.status}
-                    </span>
-                    <p className="text-sm text-gray-500 mt-1">{shift.filledSlots}/{shift.slots} filled</p>
+                    <span className="text-gray-500 text-xs">${shift.payRate}/hr</span>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           )}
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="space-y-3">
-            <button className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-left">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">+</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Create Shift</p>
-                <p className="text-xs text-gray-700">Add new shift</p>
-              </div>
-            </button>
-            
-            <button className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-left">
-              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">👥</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Manage Staff</p>
-                <p className="text-xs text-gray-700">View team</p>
-              </div>
-            </button>
-            
-            <button className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-left">
-              <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">📊</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">View Analytics</p>
-                <p className="text-xs text-gray-700">Performance data</p>
-              </div>
-            </button>
-            
-            <button className="w-full flex items-center gap-3 p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors text-left">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">🔔</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Notifications</p>
-                <p className="text-xs text-gray-700">View alerts</p>
-              </div>
-            </button>
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl flex flex-col gap-6 justify-between">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+            <div className="space-y-4">
+              <button className="w-full flex items-center gap-4 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-left group shadow-sm">
+                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-white text-2xl">+</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Create Shift</p>
+                  <p className="text-xs text-gray-700">Add new shift</p>
+                </div>
+              </button>
+              <button className="w-full flex items-center gap-4 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-left group shadow-sm">
+                <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-white text-2xl">👥</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Manage Staff</p>
+                  <p className="text-xs text-gray-700">View team</p>
+                </div>
+              </button>
+              <button className="w-full flex items-center gap-4 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors text-left group shadow-sm">
+                <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-white text-2xl">📊</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">View Analytics</p>
+                  <p className="text-xs text-gray-700">Performance data</p>
+                </div>
+              </button>
+              <button className="w-full flex items-center gap-4 p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors text-left group shadow-sm">
+                <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-white text-2xl">🔔</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Notifications</p>
+                  <p className="text-xs text-gray-700">View alerts</p>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div className="mt-8 text-center">
+            <span className="text-xs text-gray-400">Enterprise-grade security • 99.9% uptime</span>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
           <button className="text-sm text-[#D5001C] hover:text-[#B0001A] font-medium">View All</button>
         </div>
-        
         {recentActivity.length === 0 ? (
-          <div className="text-center py-8">
+          <div className="text-center py-12">
             <p className="text-gray-600">No recent activity</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {recentActivity.map((shift: any, index: number) => (
-              <div key={shift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div key={shift.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-lg font-bold text-gray-600">
                     {index + 1}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{shift.role}</p>
+                    <p className="font-semibold text-gray-900">{shift.role}</p>
                     <p className="text-sm text-gray-600">{formatDate(shift.date)} • {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                     shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
                     shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-green-100 text-green-800'
                   }`}>
-                    {shift.status}
+                    {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
                   </span>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">${shift.payRate}/hr</p>
+                    <p className="text-sm font-semibold text-gray-900">${shift.payRate}/hr</p>
                     <p className="text-xs text-gray-500">{shift.filledSlots}/{shift.slots} filled</p>
                   </div>
                 </div>
@@ -961,8 +990,8 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
       </div>
 
       {/* Performance Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-lg">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
           <h4 className="text-lg font-bold text-gray-900 mb-4">Shift Overview</h4>
           <div className="space-y-3">
             <div className="flex justify-between">
@@ -979,8 +1008,7 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
           <h4 className="text-lg font-bold text-gray-900 mb-4">Staffing</h4>
           <div className="space-y-3">
             <div className="flex justify-between">
@@ -997,25 +1025,21 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
           <h4 className="text-lg font-bold text-gray-900 mb-4">Efficiency</h4>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-700">Fill Rate</span>
               <span className="font-bold text-gray-900">{fillRate}%</span>
             </div>
-            
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Avg Shift Duration</span>
               <span className="font-bold text-gray-900">6.2 hrs</span>
             </div>
-            
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Response Time</span>
               <span className="font-bold text-gray-900">2.4 hrs</span>
             </div>
-            
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Completion Rate</span>
               <span className="font-bold text-gray-900">94.2%</span>
@@ -1035,6 +1059,15 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
+
+  // Calculate stats for header
+  const totalShifts = shifts.length
+  const todayShifts = getShiftsForDate(formatCalendarDate(new Date())).length
+  const weekShifts = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date()
+    date.setDate(date.getDate() + i)
+    return getShiftsForDate(formatCalendarDate(date)).length
+  }).reduce((sum, count) => sum + count, 0)
 
   // Update current time every minute
   useEffect(() => {
@@ -1232,27 +1265,26 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
           confirmCancel(shift.id, shift.role)
           break
         case 'approve':
-          // Add approve logic here
-          setSuccess('Shift approved!')
+          // Handle approve action
+          setSuccess('Shift approved successfully!')
           break
-        case 'reject':
-          // Add reject logic here
-          setSuccess('Shift rejected!')
+        default:
           break
       }
       setShowShiftModal(false)
     } catch (error) {
-      setError('Action failed')
+      console.error('Error performing quick action:', error)
+      setError('Failed to perform action')
     }
   }
 
-  // Navigate to today
   const goToToday = () => {
-    setCurrentMonth(new Date())
-    setSelectedDate(new Date())
+    const today = new Date()
+    setCurrentMonth(today)
+    setSelectedDate(today)
+    setViewMode('day')
   }
 
-  // Get week view data
   const getWeekData = () => {
     const weekStart = new Date(currentMonth)
     weekStart.setDate(currentMonth.getDate() - currentMonth.getDay())
@@ -1281,74 +1313,99 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
   const weekDays = getWeekData()
 
   return (
-    <div className="space-y-6">
-      {/* Calendar Header */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">Calendar View</h3>
-          
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-4">
-            <div className="flex bg-gray-100 rounded-lg p-1">
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-blue-500/90 to-blue-600/90 shadow-xl">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Calendar View</h1>
+            <p className="text-blue-100 text-lg font-light">Visualize and manage your shifts across time</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{totalShifts}</div>
+              <div className="text-blue-100 text-sm">Total Shifts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{todayShifts}</div>
+              <div className="text-blue-100 text-sm">Today</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{weekShifts}</div>
+              <div className="text-blue-100 text-sm">This Week</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls Section */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            {/* View Mode Toggle */}
+            <div className="flex bg-gray-100 rounded-xl p-1">
               {['month', 'week', 'day'].map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode as any)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ${
                     viewMode === mode
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-white text-blue-600 shadow-lg transform scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
                   }`}
                 >
                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
                 </button>
               ))}
             </div>
-            
-            <button
-              onClick={goToToday}
-              className="px-4 py-2 bg-[#D5001C] text-white rounded-lg hover:bg-[#B0001A] transition-colors text-sm font-medium"
-            >
-              Today
-            </button>
-          </div>
-        </div>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-              className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 font-medium"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-              className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 font-medium"
-            >
-              →
-            </button>
+            {/* Navigation */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+                className="p-3 bg-gray-100 rounded-xl hover:bg-gray-200 text-gray-700 font-semibold transition-colors"
+              >
+                ←
+              </button>
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+                className="p-3 bg-gray-100 rounded-xl hover:bg-gray-200 text-gray-700 font-semibold transition-colors"
+              >
+                →
+              </button>
+            </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
-            <span className="px-4 py-2 font-medium text-gray-900 w-48 text-center">
+            <span className="px-6 py-3 font-bold text-gray-900 text-lg bg-gray-50 rounded-xl">
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </span>
             
+            <button
+              onClick={goToToday}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
+            >
+              Today
+            </button>
+
             {/* Date Picker */}
             <button
               onClick={() => setShowDatePicker(!showDatePicker)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
+              className="p-3 bg-gray-100 rounded-xl hover:bg-gray-200 text-gray-700 transition-colors"
             >
               📅
             </button>
 
             {/* Help Button */}
-                <div className="relative">
+            <div className="relative">
               <button
                 onClick={() => setShowHelp(!showHelp)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-3 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                 title="Keyboard shortcuts"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1358,38 +1415,38 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
               
               {/* Help Tooltip */}
               {showHelp && (
-                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-20">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-900">Keyboard Shortcuts</h4>
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl p-6 z-20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-bold text-gray-900">Keyboard Shortcuts</h4>
                     <button
                       onClick={() => setShowHelp(false)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-gray-600 text-xl"
                     >
                       ✕
                     </button>
-                </div>
-                  <div className="space-y-2 text-sm">
+                  </div>
+                  <div className="space-y-3 text-sm">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="font-medium text-gray-700 mb-1">View</div>
-                        <div className="space-y-1 text-gray-600">
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">W</kbd> Week view</div>
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">M</kbd> Month view</div>
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">D</kbd> Day view</div>
-              </div>
-            </div>
-            <div>
-                        <div className="font-medium text-gray-700 mb-1">Navigation</div>
-                        <div className="space-y-1 text-gray-600">
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">← →</kbd> Navigate</div>
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">↑ ↓</kbd> Week/Day</div>
-                          <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">T</kbd> Today</div>
-            </div>
-          </div>
+                        <div className="font-semibold text-gray-700 mb-2">View</div>
+                        <div className="space-y-2 text-gray-600">
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">W</kbd> Week view</div>
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">M</kbd> Month view</div>
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">D</kbd> Day view</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-700 mb-2">Navigation</div>
+                        <div className="space-y-2 text-gray-600">
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">← →</kbd> Navigate</div>
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">↑ ↓</kbd> Week/Day</div>
+                          <div><kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">T</kbd> Today</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="pt-2 border-t border-gray-200">
+                    <div className="pt-3 border-t border-gray-200">
                       <div className="text-gray-600">
-                        <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Esc</kbd> Close modal
+                        <kbd className="px-2 py-1 bg-gray-100 rounded-lg text-xs font-mono">Esc</kbd> Close modal
                       </div>
                     </div>
                   </div>
@@ -1401,7 +1458,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
 
         {/* Date Picker Modal */}
         {showDatePicker && (
-          <div className="absolute top-20 right-6 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+          <div className="absolute top-20 right-6 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 z-10">
             <input
               type="date"
               value={selectedDate.toISOString().split('T')[0]}
@@ -1411,18 +1468,18 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 setSelectedDate(newDate)
                 setShowDatePicker(false)
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-gray-900 font-medium"
             />
           </div>
         )}
       </div>
 
       {/* Calendar Grid */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
         {viewMode === 'month' && (
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-2">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="p-2 text-center font-medium text-gray-700">
+              <div key={day} className="p-4 text-center font-bold text-gray-700 text-lg">
                 {day}
               </div>
             ))}
@@ -1430,9 +1487,9 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
             {days.map((dayData, index) => (
               <div
                 key={index}
-                className={`p-2 min-h-[100px] border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  dayData ? 'bg-white' : 'bg-gray-50'
-                } ${isToday(dayData) ? 'ring-2 ring-[#D5001C] ring-opacity-50' : ''}`}
+                className={`p-3 min-h-[120px] border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all duration-300 ${
+                  dayData ? 'bg-white hover:shadow-lg hover:-translate-y-1' : 'bg-gray-50'
+                } ${isToday(dayData) ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' : ''}`}
                 onClick={() => {
                   if (dayData) {
                     setSelectedDate(new Date(dayData.date))
@@ -1442,21 +1499,21 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
               >
                 {dayData && (
                   <>
-                    <div className={`text-sm font-medium mb-1 ${isToday(dayData) ? 'text-[#D5001C] font-bold' : 'text-gray-900'}`}>
+                    <div className={`text-lg font-bold mb-2 ${isToday(dayData) ? 'text-blue-600' : 'text-gray-900'}`}>
                       {dayData.day}
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {dayData.shifts.map((shift: any) => (
                         <div
                           key={shift.id}
                           onClick={(e) => handleShiftClick(shift, e)}
-                          className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${
-                            shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                            shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                          className={`text-xs p-2 rounded-lg cursor-pointer hover:opacity-80 transition-all duration-300 shadow-sm ${
+                            shift.status === 'open' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                            shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                            'bg-green-100 text-green-800 border border-green-200'
                           }`}
                         >
-                          <div className="font-medium">{shift.role}</div>
+                          <div className="font-semibold">{shift.role}</div>
                           <div className="text-xs opacity-75">
                             {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
                           </div>
@@ -1474,14 +1531,14 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
         )}
 
         {viewMode === 'week' && (
-          <div className="grid grid-cols-8 gap-1 relative">
-            <div className="p-2 text-center font-medium text-gray-700">Time</div>
+          <div className="grid grid-cols-8 gap-2 relative">
+            <div className="p-4 text-center font-bold text-gray-700 text-lg">Time</div>
             {weekDays.map((dayData, index) => (
-              <div key={index} className="p-2 text-center font-medium text-gray-700">
-                <div className={`text-sm ${dayData.isToday ? 'text-[#D5001C] font-bold' : ''}`}>
+              <div key={index} className="p-4 text-center">
+                <div className={`text-sm font-semibold ${dayData.isToday ? 'text-blue-600' : 'text-gray-600'}`}>
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}
                 </div>
-                <div className={`text-lg ${dayData.isToday ? 'text-[#D5001C] font-bold' : 'text-gray-900'}`}>
+                <div className={`text-2xl font-bold ${dayData.isToday ? 'text-blue-600' : 'text-gray-900'}`}>
                   {dayData.day}
                 </div>
               </div>
@@ -1493,13 +1550,13 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 className="absolute left-0 right-0 z-10 pointer-events-none"
                 style={{
                   top: `${(getCurrentTimePosition() * 60) + 80}px`, // 60px per hour + header height
-                  height: '2px',
-                  background: 'linear-gradient(90deg, #D5001C 0%, #D5001C 50%, transparent 50%, transparent 100%)',
-                  backgroundSize: '8px 2px'
+                  height: '3px',
+                  background: 'linear-gradient(90deg, #3B82F6 0%, #3B82F6 50%, transparent 50%, transparent 100%)',
+                  backgroundSize: '12px 3px'
                 }}
               >
-                <div className="absolute -left-2 -top-1 w-4 h-4 bg-[#D5001C] rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                <div className="absolute -left-3 -top-1.5 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
                 </div>
               </div>
             )}
@@ -1507,11 +1564,11 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
             {/* Time slots */}
             {Array.from({ length: 24 }, (_, hour) => (
               <React.Fragment key={hour}>
-                <div className="p-2 text-xs text-gray-500 border-t border-gray-200">
+                <div className="p-2 text-xs text-gray-500 border-t border-gray-200 font-medium">
                   {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
                 </div>
                 {weekDays.map((dayData, dayIndex) => (
-                  <div key={dayIndex} className="p-1 border-t border-gray-200 min-h-[60px]">
+                  <div key={dayIndex} className="p-2 border-t border-gray-200 min-h-[60px]">
                     {dayData.shifts.filter((shift: any) => {
                       const startHour = parseInt(shift.startTime.split(':')[0])
                       return startHour === hour
@@ -1519,13 +1576,13 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                       <div
                         key={shift.id}
                         onClick={(e) => handleShiftClick(shift, e)}
-                        className={`text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity mb-1 ${
-                          shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                          shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
+                        className={`text-xs p-2 rounded-lg cursor-pointer hover:opacity-80 transition-all duration-300 mb-1 shadow-sm ${
+                          shift.status === 'open' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                          shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                          'bg-green-100 text-green-800 border border-green-200'
                         }`}
                       >
-                        <div className="font-medium">{shift.role}</div>
+                        <div className="font-semibold">{shift.role}</div>
                         <div className="text-xs opacity-75">
                           {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
                         </div>
@@ -1539,9 +1596,9 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
         )}
 
         {viewMode === 'day' && (
-          <div className="space-y-4 relative">
-            <div className="text-center mb-4">
-              <h4 className="text-lg font-bold text-gray-900">
+          <div className="space-y-6 relative">
+            <div className="text-center mb-6">
+              <h4 className="text-2xl font-bold text-gray-900">
                 {selectedDate.toLocaleDateString('en-US', { 
                   weekday: 'long', 
                   year: 'numeric', 
@@ -1557,39 +1614,39 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 className="absolute left-0 right-0 z-10 pointer-events-none"
                 style={{
                   top: `${(getCurrentTimePosition() * 60) + 80}px`, // 60px per hour + header height
-                  height: '2px',
-                  background: 'linear-gradient(90deg, #D5001C 0%, #D5001C 50%, transparent 50%, transparent 100%)',
-                  backgroundSize: '8px 2px'
+                  height: '3px',
+                  background: 'linear-gradient(90deg, #3B82F6 0%, #3B82F6 50%, transparent 50%, transparent 100%)',
+                  backgroundSize: '12px 3px'
                 }}
               >
-                <div className="absolute -left-2 -top-1 w-4 h-4 bg-[#D5001C] rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                <div className="absolute -left-3 -top-1.5 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
                 </div>
               </div>
             )}
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               {Array.from({ length: 24 }, (_, hour) => {
                 const hourShifts = getShiftsForDate(formatCalendarDate(selectedDate))
                   .filter((shift: any) => parseInt(shift.startTime.split(':')[0]) === hour)
                 
                 return (
-                  <div key={hour} className="flex items-center border-b border-gray-200 py-2">
-                    <div className="w-16 text-sm text-gray-500">
+                  <div key={hour} className="flex items-center border-b border-gray-200 py-3">
+                    <div className="w-20 text-sm text-gray-500 font-medium">
                       {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
                     </div>
-                    <div className="flex-1 flex gap-2">
+                    <div className="flex-1 flex gap-3">
                       {hourShifts.map((shift: any) => (
                         <div
                           key={shift.id}
                           onClick={(e) => handleShiftClick(shift, e)}
-                          className={`flex-1 p-3 rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${
-                            shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                            shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                          className={`flex-1 p-4 rounded-xl cursor-pointer hover:opacity-80 transition-all duration-300 shadow-sm ${
+                            shift.status === 'open' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                            shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                            'bg-green-100 text-green-800 border border-green-200'
                           }`}
                         >
-                          <div className="font-medium">{shift.role}</div>
+                          <div className="font-semibold">{shift.role}</div>
                           <div className="text-sm opacity-75">
                             {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
                           </div>
@@ -1610,69 +1667,69 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
       {/* Shift Details Modal */}
       {showShiftModal && selectedShift && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Shift Details</h3>
-        <button
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Shift Details</h3>
+              <button
                 onClick={() => setShowShiftModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-        >
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
                 ✕
-        </button>
-      </div>
+              </button>
+            </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="text-sm font-medium text-gray-700">Role</label>
-                <p className="text-gray-900 font-medium">{selectedShift.role}</p>
-          </div>
+                <label className="text-sm font-semibold text-gray-700">Role</label>
+                <p className="text-gray-900 font-bold text-lg">{selectedShift.role}</p>
+              </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700">Date & Time</label>
-                <p className="text-gray-900">{formatDate(selectedShift.date)}</p>
-                <p className="text-gray-900">{formatTime(selectedShift.startTime)} - {formatTime(selectedShift.endTime)}</p>
-          </div>
+                <label className="text-sm font-semibold text-gray-700">Date & Time</label>
+                <p className="text-gray-900 font-medium">{formatDate(selectedShift.date)}</p>
+                <p className="text-gray-900 font-medium">{formatTime(selectedShift.startTime)} - {formatTime(selectedShift.endTime)}</p>
+              </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700">Pay Rate</label>
-                <p className="text-gray-900">${selectedShift.payRate}/hr</p>
-          </div>
+                <label className="text-sm font-semibold text-gray-700">Pay Rate</label>
+                <p className="text-gray-900 font-bold text-lg">${selectedShift.payRate}/hr</p>
+              </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700">Status</label>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                <label className="text-sm font-semibold text-gray-700">Status</label>
+                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                   selectedShift.status === 'open' ? 'bg-blue-100 text-blue-800' :
                   selectedShift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-green-100 text-green-800'
                 }`}>
-                  {selectedShift.status}
+                  {selectedShift.status.charAt(0).toUpperCase() + selectedShift.status.slice(1)}
                 </span>
-          </div>
+              </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700">Staffing</label>
-                <p className="text-gray-900">{selectedShift.filledSlots}/{selectedShift.slots} positions filled</p>
-        </div>
+                <label className="text-sm font-semibold text-gray-700">Staffing</label>
+                <p className="text-gray-900 font-medium">{selectedShift.filledSlots}/{selectedShift.slots} positions filled</p>
+              </div>
 
               {selectedShift.notes && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Notes</label>
-                  <p className="text-gray-900">{selectedShift.notes}</p>
+                  <label className="text-sm font-semibold text-gray-700">Notes</label>
+                  <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{selectedShift.notes}</p>
                 </div>
               )}
               
-              <div className="flex gap-2 pt-4">
+              <div className="flex gap-3 pt-4">
                 {selectedShift.status === 'open' && (
                   <>
                     <button
                       onClick={() => handleQuickAction('delete', selectedShift)}
-                      className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-semibold"
                     >
                       Delete
                     </button>
                     <button
                       onClick={() => handleQuickAction('approve', selectedShift)}
-                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                      className="flex-1 px-4 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-semibold"
                     >
                       Approve
                     </button>
@@ -1683,13 +1740,13 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                   <>
                     <button
                       onClick={() => handleQuickAction('cancel', selectedShift)}
-                      className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                      className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-semibold"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => handleQuickAction('approve', selectedShift)}
-                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                      className="flex-1 px-4 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-semibold"
                     >
                       Approve
                     </button>
@@ -1698,7 +1755,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 
                 <button
                   onClick={() => setShowShiftModal(false)}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
                 >
                   Close
                 </button>
@@ -1732,6 +1789,12 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
     'Cashier', 'Lifeguard', 'Receptionist', 'Security', 'Cleaner',
     'Delivery Driver', 'Manager'
   ]
+
+  // Calculate stats for header
+  const totalShifts = shifts.length
+  const openShifts = shifts.filter((s: any) => s.status === 'open').length
+  const pendingShifts = shifts.filter((s: any) => s.status === 'pending').length
+  const confirmedShifts = shifts.filter((s: any) => s.status === 'confirmed').length
 
   // Form handlers
   async function handleAddShift(e: React.FormEvent) {
@@ -1787,240 +1850,284 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
   }
 
   return (
-    <div className="space-y-6">
-      {/* Add Shift Button */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold">All Shifts</h3>
-        <div className="flex gap-4">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg"
-          >
-            <option value="closest">Closest Upcoming</option>
-            <option value="date">Date</option>
-            <option value="role">Role</option>
-            <option value="status">Status</option>
-          </select>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-purple-500/90 to-purple-600/90 shadow-xl">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Shift Management</h1>
+            <p className="text-purple-100 text-lg font-light">Create, manage, and track all your shifts</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{totalShifts}</div>
+              <div className="text-purple-100 text-sm">Total Shifts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{openShifts}</div>
+              <div className="text-purple-100 text-sm">Open</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{pendingShifts}</div>
+              <div className="text-purple-100 text-sm">Pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls Section */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 bg-gray-50 text-gray-900 font-medium"
+            >
+              <option value="closest">Closest Upcoming</option>
+              <option value="date">Date</option>
+              <option value="role">Role</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-[#D5001C] text-white px-4 py-2 rounded-lg hover:bg-[#B0001A] transition-colors"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           >
-            {showForm ? 'Cancel' : '+ Add Shift'}
+            {showForm ? 'Cancel' : '+ Create Shift'}
           </button>
-              </div>
+        </div>
       </div>
 
       {/* Add Shift Form */}
       {showForm && (
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h4 className="text-lg font-bold mb-4 text-gray-900">Create New Shift</h4>
-          <form onSubmit={handleAddShift} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-purple-100">
+          <h4 className="text-2xl font-bold mb-6 text-gray-900">Create New Shift</h4>
+          <form onSubmit={handleAddShift} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
                 <div className="relative">
-        <input
-          type="text"
-          placeholder="e.g., Bartender, Server"
-          value={role}
-          onChange={e => setRole(e.target.value)}
+                  <input
+                    type="text"
+                    placeholder="e.g., Bartender, Server"
+                    value={role}
+                    onChange={e => setRole(e.target.value)}
                     onFocus={() => setShowRoleDropdown(true)}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none placeholder-gray-400 text-gray-900"
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 placeholder-gray-400 text-gray-900 bg-gray-50 font-medium"
                   />
                   <button
                     type="button"
                     onClick={() => setShowRoleDropdown(!showRoleDropdown)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                   
                   {showRoleDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-                        {commonRoles.map((commonRole) => (
-                          <button
-                            key={commonRole}
-                            type="button"
-                            onClick={() => selectRole(commonRole)}
-                          className="w-full text-left px-3 py-2 hover:bg-gray-100 text-gray-900"
-                          >
-                            {commonRole}
-                          </button>
-                        ))}
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-10 max-h-48 overflow-y-auto">
+                      {commonRoles.map((commonRole) => (
+                        <button
+                          key={commonRole}
+                          type="button"
+                          onClick={() => selectRole(commonRole)}
+                          className="w-full text-left px-4 py-3 hover:bg-purple-50 text-gray-900 font-medium"
+                        >
+                          {commonRole}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-        <input
-          type="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-          required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none text-gray-900 placeholder-gray-400"
-                  />
-                </div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={e => setDate(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-900 placeholder-gray-400 bg-gray-50 font-medium"
+                />
+              </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Start Time</label>
                 <input
                   type="time"
                   value={startTime}
                   onChange={e => setStartTime(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-900 placeholder-gray-400 bg-gray-50 font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">End Time</label>
                 <input
                   type="time"
                   value={endTime}
                   onChange={e => setEndTime(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none placeholder-gray-900 text-gray-400"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-900 placeholder-gray-400 bg-gray-50 font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Pay Rate ($/hr)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={payRate}
-                    onChange={e => setPayRate(parseFloat(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none text-gray-900"
-                  />
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Pay Rate ($/hr)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={payRate}
+                  onChange={e => setPayRate(parseFloat(e.target.value))}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-900 bg-gray-50 font-medium"
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Number of Positions</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Number of Positions</label>
                 <input
                   type="number"
                   min="1"
                   max="50"
                   value={slots}
                   onChange={e => setSlots(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-900 bg-gray-50 font-medium"
                 />
               </div>
-                </div>
+            </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={includesTips}
-                    onChange={e => setIncludesTips(e.target.checked)}
-                  className="text-[#D5001C]"
-                  />
+              <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includesTips}
+                  onChange={e => setIncludesTips(e.target.checked)}
+                  className="text-purple-500 rounded focus:ring-purple-500"
+                />
                 <span className="text-sm font-medium text-gray-900">Tips Included</span>
-                </label>
-              <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={bonusAvailable}
-                    onChange={e => setBonusAvailable(e.target.checked)}
-                  className="text-[#D5001C]"
-                  />
+              </label>
+              <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={bonusAvailable}
+                  onChange={e => setBonusAvailable(e.target.checked)}
+                  className="text-purple-500 rounded focus:ring-purple-500"
+                />
                 <span className="text-sm font-medium text-gray-900">Bonus Available</span>
-                </label>
-              <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={overtimePay}
-                    onChange={e => setOvertimePay(e.target.checked)}
-                  className="text-[#D5001C]"
-                  />
+              </label>
+              <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={overtimePay}
+                  onChange={e => setOvertimePay(e.target.checked)}
+                  className="text-purple-500 rounded focus:ring-purple-500"
+                />
                 <span className="text-sm font-medium text-gray-900">Overtime Pay</span>
-                </label>
-              <label className="flex items-center gap-2">
-        <input
-                    type="checkbox"
-                    checked={hidePay}
-                    onChange={e => setHidePay(e.target.checked)}
-                  className="text-[#D5001C]"
-                  />
+              </label>
+              <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hidePay}
+                  onChange={e => setHidePay(e.target.checked)}
+                  className="text-purple-500 rounded focus:ring-purple-500"
+                />
                 <span className="text-sm font-medium text-gray-900">Hide Pay</span>
-                </label>
-              </div>
+              </label>
+            </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-        <textarea
-          value={notes}
-          onChange={e => setNotes(e.target.value)}
-                  placeholder="Any additional details about this shift..."
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-[#D5001C] focus:outline-none resize-none placeholder-gray-400 text-gray-900"
-        />
-              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Notes (Optional)</label>
+              <textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Any additional details about this shift..."
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-none placeholder-gray-400 text-gray-900 bg-gray-50 font-medium"
+              />
+            </div>
 
             <div className="flex gap-4">
-        <button
-          type="submit"
-                className="bg-[#D5001C] text-white px-6 py-2 rounded-lg hover:bg-[#B0001A] transition-colors"
-        >
+              <button
+                type="submit"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
+              >
                 Create Shift
-        </button>
+              </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                className="bg-gray-200 text-gray-700 px-8 py-3 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
               >
                 Cancel
               </button>
             </div>
-      </form>
-          </div>
+          </form>
+        </div>
       )}
 
       {/* Shifts List */}
       {dataLoading ? (
-        <div className="text-center py-12">
-          <div className="w-8 h-8 border-4 border-gray-200 border-t-[#D5001C] rounded-full animate-spin mx-auto"></div>
-                  </div>
+        <div className="text-center py-16">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading shifts...</p>
+        </div>
       ) : shifts.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600">No shifts found</p>
+        <div className="text-center py-16">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl text-gray-400">📋</span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">No shifts found</h3>
+          <p className="text-gray-600 mb-6">Get started by creating your first shift</p>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
+          >
+            Create First Shift
+          </button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {sortShifts(shifts).map((shift: any) => (
-            <div key={shift.id} className="bg-white rounded-xl p-6 shadow-lg">
+            <div key={shift.id} className="group bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-lg font-bold text-gray-900">{shift.role}</h4>
-                  <p className="text-gray-600">{formatDate(shift.date)} • {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h4 className="text-xl font-bold text-gray-900">{shift.role}</h4>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
+                      shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {shift.status.charAt(0).toUpperCase() + shift.status.slice(1)}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 font-medium mb-1">{formatDate(shift.date)} • {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</p>
                   <p className="text-sm text-gray-500">${shift.payRate}/hr • {shift.filledSlots}/{shift.slots} filled</p>
+                  {shift.notes && <p className="text-sm text-gray-600 mt-2 font-medium">"{shift.notes}"</p>}
                 </div>
-                <div className="flex gap-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    shift.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                    shift.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-green-100 text-green-800'
-                  }`}>
-                    {shift.status}
-                  </span>
+                <div className="flex gap-3">
                   {shift.status === 'open' ? (
                     <button
                       onClick={() => confirmDelete(shift.id, shift.role)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm"
+                      className="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 transition-colors"
                     >
                       Delete
                     </button>
                   ) : (
                     <button
                       onClick={() => confirmCancel(shift.id, shift.role)}
-                      className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm"
+                      className="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition-colors"
                     >
                       Cancel
                     </button>
@@ -2043,6 +2150,11 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
   const [selectedStaff, setSelectedStaff] = useState<any>(null)
 
   const roles = ['all', 'Server', 'Bartender', 'Host', 'Kitchen Staff', 'Manager']
+
+  // Calculate stats for header
+  const totalStaff = staff.length
+  const activeStaff = staff.filter((s: any) => s.isActive).length
+  const inactiveStaff = staff.filter((s: any) => !s.isActive).length
 
   // Staff management functions
   const handleAddStaff = async (staffData: any) => {
@@ -2099,21 +2211,44 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading staff...</div>
-                  </div>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white">
-        <h1 className="text-2xl font-bold text-white">Staff Directory</h1>
-        <p className="text-orange-100">Manage your team members and their information</p>
-                            </div>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-orange-500/90 to-orange-600/90 shadow-xl">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Staff Directory</h1>
+            <p className="text-orange-100 text-lg font-light">Manage your team members and their information</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{totalStaff}</div>
+              <div className="text-orange-100 text-sm">Total Staff</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{activeStaff}</div>
+              <div className="text-orange-100 text-sm">Active</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{inactiveStaff}</div>
+              <div className="text-orange-100 text-sm">Inactive</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Controls */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      {/* Controls Section */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
           <div className="flex flex-col sm:flex-row gap-4 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -2122,19 +2257,19 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                 placeholder="Search staff..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-gray-900 bg-gray-50 font-medium"
               />
-              <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                              </svg>
+              </svg>
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                className="px-4 py-3 border border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-gray-900 bg-gray-50 font-medium"
               >
                 {roles.map(role => (
                   <option key={role} value={role}>
@@ -2146,7 +2281,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+                className="px-4 py-3 border border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-gray-900 bg-gray-50 font-medium"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -2158,20 +2293,22 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
           {/* Add Staff Button */}
           <button
             onClick={() => setShowAddStaff(true)}
-            className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           >
-            Add Staff Member
+            + Add Staff Member
           </button>
         </div>
       </div>
 
       {/* Staff List */}
-      <div className="bg-white rounded-xl shadow-lg">
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl">
         {filteredStaff.length === 0 ? (
-          <div className="p-8 text-center">
-            <div className="text-gray-400 text-6xl mb-4">👥</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No staff members found</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="p-12 text-center">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-3xl text-gray-400">👥</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No staff members found</h3>
+            <p className="text-gray-600 mb-6">
               {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
                 ? 'Try adjusting your search or filters'
                 : 'Get started by adding your first staff member'
@@ -2180,7 +2317,7 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
             {!searchTerm && filterRole === 'all' && filterStatus === 'all' && (
               <button
                 onClick={() => setShowAddStaff(true)}
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
               >
                 Add First Staff Member
               </button>
@@ -2191,28 +2328,28 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pay Rate</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Staff Member</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pay Rate</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredStaff.map((member: Staff) => (
-                  <tr key={member.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr key={member.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-8 py-6 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                            <span className="text-sm font-medium text-orange-800">
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
+                            <span className="text-lg font-bold text-orange-800">
                               {member.firstName.charAt(0)}{member.lastName.charAt(0)}
-                              </span>
-                            </div>
+                            </span>
+                          </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-lg font-semibold text-gray-900">
                             {member.firstName} {member.lastName}
                           </div>
                           <div className="text-sm text-gray-500">
@@ -2221,20 +2358,20 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                         {member.role}
-                              </span>
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{member.email}</div>
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{member.email}</div>
                       <div className="text-sm text-gray-500">{member.phone}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-8 py-6 whitespace-nowrap text-lg font-semibold text-gray-900">
                       ${member.payRate}/hr
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <span className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${
                         member.isActive 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-red-100 text-red-800'
@@ -2242,16 +2379,16 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                         {member.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-8 py-6 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => setSelectedStaff(member)}
-                        className="text-orange-600 hover:text-orange-900 mr-3"
+                        className="text-orange-600 hover:text-orange-900 mr-4 font-semibold"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteStaff(member.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 hover:text-red-900 font-semibold"
                       >
                         Delete
                       </button>
@@ -2260,41 +2397,41 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
                 ))}
               </tbody>
             </table>
-                            </div>
+          </div>
         )}
-                          </div>
+      </div>
 
       {/* Add Staff Modal */}
       {showAddStaff && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Add Staff Member</h3>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Add Staff Member</h3>
               <button
                 onClick={() => setShowAddStaff(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 text-2xl"
               >
                 ✕
               </button>
-                          </div>
+            </div>
             
             <AddStaffForm 
               onSubmit={handleAddStaff}
               onCancel={() => setShowAddStaff(false)}
             />
-                        </div>
+          </div>
         </div>
       )}
 
       {/* Edit Staff Modal */}
       {selectedStaff && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Edit Staff Member</h3>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Edit Staff Member</h3>
               <button
                 onClick={() => setSelectedStaff(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 text-2xl"
               >
                 ✕
               </button>
@@ -2306,9 +2443,9 @@ function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
               onCancel={() => setSelectedStaff(null)}
             />
           </div>
-                          </div>
-                        )}
-                      </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -2356,52 +2493,83 @@ function AnalyticsTab({ shifts }: any) {
       value: `${fillRate}%`,
       change: '+5.2%',
       changeType: 'positive',
-      icon: '📊'
+      icon: '📊',
+      description: 'Average shift completion rate'
     },
     {
       label: 'Total Revenue',
       value: `$${totalRevenue.toLocaleString()}`,
       change: '+12.8%',
       changeType: 'positive',
-      icon: '💰'
+      icon: '💰',
+      description: 'Total revenue generated'
     },
     {
       label: 'Avg Shift Duration',
       value: '6.2 hrs',
       change: '-2.1%',
       changeType: 'negative',
-      icon: '⏱️'
+      icon: '⏱️',
+      description: 'Average shift length'
     },
     {
       label: 'Staff Satisfaction',
       value: '4.7/5',
       change: '+0.3',
       changeType: 'positive',
-      icon: '😊'
+      icon: '😊',
+      description: 'Staff satisfaction score'
     }
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
-          <p className="text-gray-300">Track performance and identify trends</p>
-                </div>
-        <div className="flex items-center gap-4">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-purple-500/90 to-purple-600/90 shadow-xl">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Analytics Dashboard</h1>
+            <p className="text-purple-100 text-lg font-light">Track performance and identify trends</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{totalShifts}</div>
+              <div className="text-purple-100 text-sm">Total Shifts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{fillRate}%</div>
+              <div className="text-purple-100 text-sm">Fill Rate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">${totalRevenue.toLocaleString()}</div>
+              <div className="text-purple-100 text-sm">Revenue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls Section */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex items-center gap-4">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium text-gray-900 bg-white"
+            >
+              <option value="7d" className="text-gray-900">Last 7 days</option>
+              <option value="30d" className="text-gray-900">Last 30 days</option>
+              <option value="90d" className="text-gray-900">Last 90 days</option>
+              <option value="1y" className="text-gray-900">Last year</option>
+            </select>
+          </div>
           
-          <button className="bg-[#D5001C] hover:bg-[#B0001A] text-white px-4 py-2 rounded-lg font-medium transition-colors">
+          <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
             Export Report
           </button>
         </div>
@@ -2410,46 +2578,47 @@ function AnalyticsTab({ shifts }: any) {
       {/* Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {performanceMetrics.map((metric, index) => (
-          <div key={index} className="bg-white rounded-xl p-6 shadow-lg">
+          <div key={index} className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl">{metric.icon}</span>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                metric.changeType === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                metric.changeType === 'positive' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               }`}>
                 {metric.change}
-                            </span>
+              </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">{metric.value}</h3>
-            <p className="text-gray-700 text-sm font-medium">{metric.label}</p>
+            <h3 className="text-3xl font-black text-gray-900 mb-2">{metric.value}</h3>
+            <p className="text-gray-700 font-semibold mb-1">{metric.label}</p>
+            <p className="text-gray-500 text-sm">{metric.description}</p>
           </div>
         ))}
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Fill Rate Trend */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Fill Rate Trend</h3>
-                  <select
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-2xl font-bold text-gray-900">Fill Rate Trend</h3>
+            <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900"
+              className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium text-gray-900 bg-white"
             >
-              <option value="fillRate">Fill Rate</option>
-              <option value="shifts">Shifts</option>
-              <option value="revenue">Revenue</option>
-                  </select>
-                </div>
+              <option value="fillRate" className="text-gray-900">Fill Rate</option>
+              <option value="shifts" className="text-gray-900">Shifts</option>
+              <option value="revenue" className="text-gray-900">Revenue</option>
+            </select>
+          </div>
           
-          <div className="h-64 flex items-end justify-between gap-2">
+          <div className="h-80 flex items-end justify-between gap-3">
             {monthlyData.map((data, index) => (
               <div key={index} className="flex-1 flex flex-col items-center">
-                <div className="w-full bg-gray-200 rounded-t-lg relative">
+                <div className="w-full bg-gray-100 rounded-t-xl relative h-full">
                   <div 
-                    className="bg-[#D5001C] rounded-t-lg transition-all duration-300"
+                    className="bg-gradient-to-t from-purple-500 to-purple-600 rounded-t-xl transition-all duration-500 shadow-lg"
                     style={{ 
                       height: `${selectedMetric === 'fillRate' ? data.fillRate : 
                               selectedMetric === 'shifts' ? (data.shifts / 20) * 100 : 
@@ -2457,224 +2626,48 @@ function AnalyticsTab({ shifts }: any) {
                     }}
                   />
                 </div>
-                <span className="text-xs text-gray-600 mt-2">{data.month}</span>
+                <span className="text-sm text-gray-600 mt-3 font-medium">{data.month}</span>
               </div>
             ))}
-              </div>
+          </div>
 
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 font-medium">
               {selectedMetric === 'fillRate' ? 'Average fill rate per month' :
                selectedMetric === 'shifts' ? 'Total shifts per month' :
                'Revenue per month'}
             </p>
-                </div>
-                  </div>
+          </div>
+        </div>
 
         {/* Role Distribution */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Role Distribution</h3>
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <h3 className="text-2xl font-bold text-gray-900 mb-8">Role Distribution</h3>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {Object.entries(roleDistribution).map(([role, count]: [string, any]) => {
               const percentage = Math.round((count / totalShifts) * 100)
               return (
                 <div key={role} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-[#D5001C] rounded-full"></div>
-                    <span className="font-medium text-gray-900">{role}</span>
-                </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                  <div className="flex items-center gap-4">
+                    <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full shadow-sm"></div>
+                    <span className="font-semibold text-gray-900">{role}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-40 bg-gray-100 rounded-full h-3">
                       <div 
-                        className="bg-[#D5001C] h-2 rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500 shadow-sm"
                         style={{ width: `${percentage}%` }}
                       />
-                            </div>
-                    <span className="text-sm font-medium text-gray-900 w-12 text-right">
+                    </div>
+                    <span className="text-sm font-bold text-gray-900 w-16 text-right">
                       {percentage}%
-                            </span>
-                            </div>
-                            </div>
-              )
-            })}
-                          </div>
-                            </div>
-                        </div>
-                        
-      {/* Detailed Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Shift Status Breakdown */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">Shift Status</h4>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-gray-700 font-medium">Open</span>
-                          </div>
-              <span className="font-bold text-gray-900">
-                {shifts.filter((s: any) => s.status === 'open').length}
-                            </span>
-                        </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span className="text-gray-700 font-medium">Pending</span>
-              </div>
-              <span className="font-bold text-gray-900">
-                {shifts.filter((s: any) => s.status === 'pending').length}
-                            </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-gray-700 font-medium">Confirmed</span>
-              </div>
-              <span className="font-bold text-gray-900">
-                {shifts.filter((s: any) => s.status === 'confirmed').length}
-                            </span>
-                        </div>
-          </div>
-        </div>
-
-        {/* Top Performing Roles */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">Top Performing Roles</h4>
-          
-          <div className="space-y-4">
-            {Object.entries(roleDistribution)
-              .sort(([,a]: any, [,b]: any) => b - a)
-              .slice(0, 3)
-              .map(([role, count]: [string, any]) => (
-                <div key={role} className="flex items-center justify-between">
-                  <span className="text-gray-700 font-medium">{role}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-gray-900">{count}</span>
-                    <span className="text-sm text-gray-600">shifts</span>
+                    </span>
                   </div>
                 </div>
-              ))}
+              )
+            })}
           </div>
-        </div>
-
-        {/* Efficiency Metrics */}
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">Efficiency Metrics</h4>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium">Avg Fill Rate</span>
-              <span className="font-bold text-gray-900">{fillRate}%</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium">Avg Shift Duration</span>
-              <span className="font-bold text-gray-900">6.2 hrs</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 font-medium">Response Time</span>
-              <span className="font-bold text-gray-900">2.4 hrs</span>
-            </div>
-            
-            
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">Completion Rate</span>
-              <span className="font-bold text-gray-900">94.2%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Insights and Recommendations */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Insights & Recommendations</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                ✓
-              </div>
-                            <div>
-                <h4 className="font-medium text-green-900">Strong Performance</h4>
-                <p className="text-sm text-green-700 mt-1">Fill rate has improved by 5.2% this month compared to last month.</p>
-                            </div>
-                          </div>
-            
-            <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                💡
-                        </div>
-              <div>
-                <h4 className="font-medium text-blue-900">Opportunity</h4>
-                <p className="text-sm text-blue-700 mt-1">Kitchen Staff roles have the highest demand. Consider hiring more staff.</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
-              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                ⚠️
-              </div>
-              <div>
-                <h4 className="font-medium text-yellow-900">Attention Needed</h4>
-                <p className="text-sm text-yellow-700 mt-1">Weekend shifts have lower fill rates. Consider adjusting pay rates.</p>
-              </div>
-                        </div>
-                        
-            <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-              <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                📈
-              </div>
-              <div>
-                <h4 className="font-medium text-purple-900">Trend</h4>
-                <p className="text-sm text-purple-700 mt-1">Revenue has increased 12.8% due to better shift optimization.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-left">
-            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">📊</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">Generate Report</p>
-              <p className="text-sm text-gray-600">Export detailed analytics</p>
-            </div>
-                            </button>
-          
-          <button className="flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-left">
-            <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">📧</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">Share Insights</p>
-              <p className="text-sm text-gray-600">Email to stakeholders</p>
-            </div>
-          </button>
-          
-          <button className="flex items-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-left">
-            <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">⚙️</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">Configure Alerts</p>
-              <p className="text-sm text-gray-600">Set up notifications</p>
-            </div>
-          </button>
         </div>
       </div>
     </div>
@@ -2682,918 +2675,316 @@ function AnalyticsTab({ shifts }: any) {
 }
 
 function NotificationsTab() {
-  const [filterType, setFilterType] = useState('all')
-  const [showUnreadOnly, setShowUnreadOnly] = useState(false)
-
   // Mock notifications data
-  const [notifications, setNotifications] = useState([
+  const notifications = [
     {
-      id: '1',
-      type: 'shift',
-      title: 'New shift request',
-      message: 'Sarah Johnson requested to pick up the Server shift on Dec 15th',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      read: false,
-      priority: 'high',
-      action: 'approve'
+      id: 1,
+      type: 'success',
+      title: 'Shift Approved',
+      message: 'Your shift for Friday evening has been approved by management.',
+      time: '2 hours ago',
+      read: false
     },
     {
-      id: '2',
-      type: 'staff',
-      title: 'Staff availability updated',
-      message: 'Mike Chen updated their availability for next week',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      read: false,
-      priority: 'medium',
-      action: 'view'
+      id: 2,
+      type: 'warning',
+      title: 'Low Staff Alert',
+      message: 'Saturday morning shift is currently understaffed. Consider adding more slots.',
+      time: '4 hours ago',
+      read: true
     },
     {
-      id: '3',
-      type: 'system',
-      title: 'System maintenance',
-      message: 'Scheduled maintenance will occur tonight at 2 AM',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-      read: true,
-      priority: 'low',
-      action: 'dismiss'
-    },
-    {
-      id: '4',
-      type: 'shift',
-      title: 'Shift filled',
-      message: 'The Bartender shift on Dec 14th has been filled by Emma Rodriguez',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
-      read: true,
-      priority: 'medium',
-      action: 'view'
-    },
-    {
-      id: '5',
-      type: 'alert',
-      title: 'Low fill rate alert',
-      message: 'Weekend shifts have a fill rate below 70%',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8), // 8 hours ago
-      read: false,
-      priority: 'high',
-      action: 'review'
-    },
-    {
-      id: '6',
-      type: 'staff',
-      title: 'New staff member',
-      message: 'Lisa Thompson has completed their profile setup',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
-      read: true,
-      priority: 'medium',
-      action: 'view'
+      id: 3,
+      type: 'info',
+      title: 'System Update',
+      message: 'ShiftLyst has been updated with new features. Check out the latest improvements.',
+      time: '1 day ago',
+      read: true
     }
-  ])
-
-  const notificationTypes = [
-    { value: 'all', label: 'All', icon: '🔔' },
-    { value: 'shift', label: 'Shifts', icon: '📋' },
-    { value: 'staff', label: 'Staff', icon: '👥' },
-    { value: 'system', label: 'System', icon: '⚙️' },
-    { value: 'alert', label: 'Alerts', icon: '⚠️' }
   ]
 
-  const filteredNotifications = notifications.filter(notification => {
-    const matchesType = filterType === 'all' || notification.type === filterType
-    const matchesRead = !showUnreadOnly || !notification.read
-    return matchesType && matchesRead
-  })
-
   const unreadCount = notifications.filter(n => !n.read).length
-  const highPriorityCount = notifications.filter(n => n.priority === 'high' && !n.read).length
-
-  function markAsRead(notificationId: string) {
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-    )
-  }
-
-  function markAllAsRead() {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
-  }
-
-  function deleteNotification(notificationId: string) {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId))
-  }
-
-  function getTimeAgo(timestamp: Date): string {
-    const now = new Date()
-    const diffMs = now.getTime() - timestamp.getTime()
-    const diffMins = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    return `${diffDays}d ago`
-  }
-
-  function getNotificationIcon(type: string): string {
-    switch (type) {
-      case 'shift': return '📋'
-      case 'staff': return '👥'
-      case 'system': return '⚙️'
-      case 'alert': return '⚠️'
-      default: return '🔔'
-    }
-  }
-
-  function getPriorityColor(priority: string): string {
-    switch (priority) {
-      case 'high': return 'border-red-500 bg-red-50'
-      case 'medium': return 'border-yellow-500 bg-yellow-50'
-      case 'low': return 'border-blue-500 bg-blue-50'
-      default: return 'border-gray-300 bg-gray-50'
-    }
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Notifications</h1>
-          <p className="text-gray-300">Stay updated with important alerts and updates</p>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-teal-500/90 to-teal-600/90 shadow-xl">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
-        <div className="flex items-center gap-3">
-          {unreadCount > 0 && (
-                            <button
-              onClick={markAllAsRead}
-              className="text-sm text-[#D5001C] hover:text-[#B0001A] font-medium"
-                            >
-              Mark all as read
-                            </button>
-                          )}
-          <button className="bg-[#D5001C] hover:bg-[#B0001A] text-white px-4 py-2 rounded-lg font-medium transition-colors">
-            Settings
-          </button>
-                        </div>
-                      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-red-500">
-          <div className="flex items-center justify-between">
-                            <div>
-              <p className="text-gray-700 text-sm font-medium">Unread</p>
-              <p className="text-3xl font-bold text-red-600">{unreadCount}</p>
-                            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">🔔</span>
-                          </div>
-                        </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-orange-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-700 text-sm font-medium">High Priority</p>
-              <p className="text-3xl font-bold text-orange-600">{highPriorityCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">⚠️</span>
-            </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Notifications</h1>
+            <p className="text-teal-100 text-lg font-light">Stay updated with important alerts and updates</p>
           </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium">Today</p>
-              <p className="text-3xl font-bold text-blue-600">
-                {notifications.filter(n => {
-                  const today = new Date()
-                  const notificationDate = new Date(n.timestamp)
-                  return notificationDate.toDateString() === today.toDateString()
-                }).length}
-              </p>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{notifications.length}</div>
+              <div className="text-teal-100 text-sm">Total</div>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📅</span>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">{unreadCount}</div>
+              <div className="text-teal-100 text-sm">Unread</div>
             </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium">Total</p>
-              <p className="text-3xl font-bold text-green-600">{notifications.length}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📊</span>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">3</div>
+              <div className="text-teal-100 text-sm">This Week</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex flex-wrap gap-2">
-            {notificationTypes.map(type => (
-              <button
-                key={type.value}
-                onClick={() => setFilterType(type.value)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filterType === type.value
-                    ? 'bg-[#D5001C] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <span>{type.icon}</span>
-                <span>{type.label}</span>
-              </button>
-                  ))}
-                </div>
+      {/* Controls Section */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="bg-gradient-to-r from-teal-500 to-teal-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
+              Mark All Read
+            </button>
+            <button className="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors">
+              Clear All
+            </button>
+          </div>
           
-          <div className="flex items-center gap-3 ml-auto">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={showUnreadOnly}
-                onChange={(e) => setShowUnreadOnly(e.target.checked)}
-                className="rounded border-gray-300 text-[#D5001C] focus:ring-[#D5001C]"
-              />
-              Show unread only
-            </label>
-            </div>
+          <div className="flex items-center gap-4">
+            <select className="px-4 py-3 border border-gray-200 rounded-xl focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-medium text-gray-900 bg-white">
+              <option value="all" className="text-gray-900">All Notifications</option>
+              <option value="unread" className="text-gray-900">Unread Only</option>
+              <option value="success" className="text-gray-900">Success</option>
+              <option value="warning" className="text-gray-900">Warnings</option>
+              <option value="info" className="text-gray-900">Info</option>
+            </select>
           </div>
         </div>
+      </div>
 
       {/* Notifications List */}
       <div className="space-y-4">
-        {filteredNotifications.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl shadow-lg">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl text-gray-400">🔔</span>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-            <p className="text-gray-600">You're all caught up!</p>
-          </div>
-        ) : (
-          filteredNotifications.map(notification => (
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`bg-white rounded-xl shadow-lg border-l-4 transition-all duration-200 hover:shadow-xl ${
-                getPriorityColor(notification.priority)
-              } ${!notification.read ? 'ring-2 ring-[#D5001C] ring-opacity-20' : ''}`}
+              className={`bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 ${
+                !notification.read ? 'ring-2 ring-teal-500/20' : ''
+              }`}
             >
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                      <span className="text-xl">{getNotificationIcon(notification.type)}</span>
-      </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-gray-900">{notification.title}</h3>
-                        {!notification.read && (
-                          <span className="w-2 h-2 bg-[#D5001C] rounded-full"></span>
-                        )}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          notification.priority === 'high' ? 'bg-red-100 text-red-800' :
-                          notification.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-blue-100 text-blue-800'
-                        }`}>
-                          {notification.priority}
-                        </span>
-                      </div>
-                      
-                      <p className="text-gray-600 mb-3">{notification.message}</p>
-                      
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>{getTimeAgo(notification.timestamp)}</span>
-                        <span>•</span>
-                        <span className="capitalize">{notification.type}</span>
-              </div>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${
+                  notification.type === 'success' ? 'bg-gradient-to-br from-green-100 to-green-200' :
+                  notification.type === 'warning' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200' :
+                  'bg-gradient-to-br from-blue-100 to-blue-200'
+                }`}>
+                  <span className="text-xl">
+                    {notification.type === 'success' ? '✅' :
+                     notification.type === 'warning' ? '⚠️' : 'ℹ️'}
+                  </span>
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-bold text-gray-900">{notification.title}</h3>
+                    <div className="flex items-center gap-2">
+                      {!notification.read && (
+                        <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                      )}
+                      <span className="text-sm text-gray-500 font-medium">{notification.time}</span>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2 ml-4">
-                    {!notification.read && (
-                        <button
-                        onClick={() => markAsRead(notification.id)}
-                        className="text-gray-400 hover:text-gray-600 p-1"
-                        title="Mark as read"
-                        >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        </button>
-                    )}
-                    
-                        <button
-                      onClick={() => deleteNotification(notification.id)}
-                      className="text-gray-400 hover:text-red-600 p-1"
-                      title="Delete notification"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                </button>
-              </div>
-            </div>
-                
-                {/* Action Buttons */}
-                <div className="mt-4 flex gap-2">
-                  {notification.action === 'approve' && (
-                    <>
-                      <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors">
-                          Approve
-                        </button>
-                      <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors">
-                        Decline
-                      </button>
-                    </>
-                  )}
-                  
-                  {notification.action === 'view' && (
-                    <button className="px-4 py-2 bg-[#D5001C] hover:bg-[#B0001A] text-white rounded-lg text-sm font-medium transition-colors">
+                  <p className="text-gray-700 mb-4">{notification.message}</p>
+                  <div className="flex items-center gap-3">
+                    <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm transition-colors">
                       View Details
                     </button>
-                  )}
-                  
-                  {notification.action === 'review' && (
-                    <button className="px-4 py-2 bg-[#D5001C] hover:bg-[#B0001A] text-white rounded-lg text-sm font-medium transition-colors">
-                      Review
-                    </button>
-                  )}
-                  
-                  {notification.action === 'dismiss' && (
-                    <button className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors">
                       Dismiss
                     </button>
-                  )}
-                      </div>
-                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           ))
+        ) : (
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-12 shadow-xl text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-3xl">🔔</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Notifications</h3>
+            <p className="text-gray-600 font-medium">You're all caught up! Check back later for updates.</p>
+          </div>
         )}
-      </div>
-
-      {/* Notification Settings Preview */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Notification Settings</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900">Shift Notifications</p>
-                <p className="text-sm text-gray-700">New shift requests and updates</p>
-              </div>
-              <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900">Staff Updates</p>
-                <p className="text-sm text-gray-700">Staff availability and profile changes</p>
-              </div>
-              <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900">System Alerts</p>
-                <p className="text-sm text-gray-700">Maintenance and system updates</p>
-              </div>
-              <div className="w-12 h-6 bg-gray-300 rounded-full relative">
-                <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900">Performance Alerts</p>
-                <p className="text-sm text-gray-700">Low fill rates and efficiency warnings</p>
-              </div>
-              <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <button className="text-[#D5001C] hover:text-[#B0001A] font-medium">
-            Configure all notification settings →
-          </button>
-        </div>
       </div>
     </div>
   )
 }
 
 function SettingsTab({ timezone, setTimezone }: any) {
-  const [activeSection, setActiveSection] = useState('general')
-  const [businessName, setBusinessName] = useState('ShiftLyst Restaurant')
-  const [currency, setCurrency] = useState('USD')
-  const [autoApprove, setAutoApprove] = useState(false)
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [pushNotifications, setPushNotifications] = useState(true)
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false)
-
-  const settingsSections = [
-    { id: 'general', label: 'General', icon: '⚙️' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'security', label: 'Security', icon: '🔒' },
-    { id: 'business', label: 'Business', icon: '🏢' },
-    { id: 'integrations', label: 'Integrations', icon: '🔗' },
-    { id: 'billing', label: 'Billing', icon: '💳' }
-  ]
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-gray-300">Manage your account and business preferences</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Settings Navigation */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-lg p-4">
-            <nav className="space-y-2">
-              {settingsSections.map(section => (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
-                    activeSection === section.id
-                      ? 'bg-[#D5001C] text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="text-lg">{section.icon}</span>
-                  <span className="font-medium">{section.label}</span>
-                </button>
-              ))}
-            </nav>
-                </div>
-              </div>
-
-        {/* Settings Content */}
-        <div className="lg:col-span-3">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            {activeSection === 'general' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">General Settings</h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
-                    <input
-                      type="text"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900"
-                    />
-                </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
-                  <select
-                      value={timezone}
-                      onChange={(e) => setTimezone(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                    >
-                      <option value="America/New_York">Eastern Time (ET)</option>
-                      <option value="America/Chicago">Central Time (CT)</option>
-                      <option value="America/Denver">Mountain Time (MT)</option>
-                      <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                      <option value="Europe/London">London (GMT/BST)</option>
-                      <option value="Europe/Berlin">Berlin (CET/CEST)</option>
-                      <option value="Europe/Paris">Paris (CET/CEST)</option>
-                      <option value="Europe/Madrid">Madrid (CET/CEST)</option>
-                      <option value="Europe/Rome">Rome (CET/CEST)</option>
-                      <option value="Europe/Amsterdam">Amsterdam (CET/CEST)</option>
-                      <option value="Europe/Brussels">Brussels (CET/CEST)</option>
-                      <option value="Europe/Vienna">Vienna (CET/CEST)</option>
-                      <option value="Europe/Zurich">Zurich (CET/CEST)</option>
-                      <option value="Europe/Stockholm">Stockholm (CET/CEST)</option>
-                      <option value="Europe/Oslo">Oslo (CET/CEST)</option>
-                      <option value="Europe/Copenhagen">Copenhagen (CET/CEST)</option>
-                      <option value="Europe/Helsinki">Helsinki (EET/EEST)</option>
-                      <option value="Europe/Warsaw">Warsaw (CET/CEST)</option>
-                      <option value="Europe/Prague">Prague (CET/CEST)</option>
-                      <option value="Europe/Budapest">Budapest (CET/CEST)</option>
-                  </select>
-                </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                    <select
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900 "
-                    >
-                      <option value="USD">USD ($)</option>
-                      <option value="EUR">EUR (€)</option>
-                      <option value="GBP">GBP (£)</option>
-                      <option value="CAD">CAD (C$)</option>
-                    </select>
-                </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">Auto-approve shift requests</p>
-                      <p className="text-sm text-gray-700">Automatically approve shift requests from trusted staff</p>
-              </div>
-                    <div className={`w-12 h-6 rounded-full relative transition-colors ${
-                      autoApprove ? 'bg-[#D5001C]' : 'bg-gray-300'
-                    }`}>
-                      <div 
-                        className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                          autoApprove ? 'right-0.5' : 'left-0.5'
-                        }`}
-                      />
-                      <input
-                        type="checkbox"
-                        checked={autoApprove}
-                        onChange={(e) => setAutoApprove(e.target.checked)}
-                        className="sr-only"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeSection === 'notifications' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Notification Preferences</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Email Notifications</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Shift requests</p>
-                          <p className="text-sm text-gray-700">When staff request to pick up shifts</p>
-                </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                  </div>
-                </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Low fill rate alerts</p>
-                          <p className="text-sm text-gray-700">When shifts have low fill rates</p>
-                            </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                            </div>
-                            </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Weekly reports</p>
-                          <p className="text-sm text-gray-700">Performance summaries and insights</p>
-                          </div>
-                        <div className="w-12 h-6 bg-gray-300 rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                            </div>
-                      </div>
-                    </div>
-                        </div>
-                        
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Push Notifications</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Urgent alerts</p>
-                          <p className="text-sm text-gray-700">Critical notifications and emergencies</p>
-                        </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Shift updates</p>
-                          <p className="text-sm text-gray-700">When shifts are modified or cancelled</p>
-                        </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                          </div>
-                        )}
-
-            {activeSection === 'security' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
-                
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                      <p className="text-sm text-gray-700">Add an extra layer of security to your account</p>
-                    </div>
-                    <div className={`w-12 h-6 rounded-full relative transition-colors ${
-                      twoFactorAuth ? 'bg-[#D5001C]' : 'bg-gray-300'
-                    }`}>
-                      <div 
-                        className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                          twoFactorAuth ? 'right-0.5' : 'left-0.5'
-                        }`}
-                      />
-                      <input
-                        type="checkbox"
-                        checked={twoFactorAuth}
-                        onChange={(e) => setTwoFactorAuth(e.target.checked)}
-                        className="sr-only"
-                      />
-                    </div>
-                      </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                      <input
-                        type="password"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                        placeholder="Enter current password"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                      <input
-                        type="password"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                        placeholder="Enter new password"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                      <input
-                        type="password"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                        placeholder="Confirm new password"
-                      />
-                    </div>
-                    
-                    <button className="bg-[#D5001C] hover:bg-[#B0001A] text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                      Update Password
-                </button>
-              </div>
-                  
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Active Sessions</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">Current Session</p>
-                          <p className="text-sm text-gray-600">MacBook Air • Chrome • New York, NY</p>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-green-500/90 to-green-600/90 shadow-xl">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Settings</h1>
+            <p className="text-green-100 text-lg font-light">Configure your preferences and system settings</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">3</div>
+              <div className="text-green-100 text-sm">Categories</div>
             </div>
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">iPhone 14</p>
-                          <p className="text-sm text-gray-600">Safari • New York, NY • 2 hours ago</p>
-                        </div>
-                        <button className="text-red-600 hover:text-red-800 text-sm font-medium">
-                          Revoke
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">12</div>
+              <div className="text-green-100 text-sm">Settings</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">2</div>
+              <div className="text-green-100 text-sm">Updated</div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
-            {activeSection === 'business' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Business Settings</h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Business Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Business Address</label>
-                        <input
-                          type="text"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                          placeholder="123 Main St, New York, NY"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                        <input
-                          type="tel"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
-                          placeholder="+1 (555) 123-4567"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Business Hours</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900">
-                          <option>9:00 AM - 10:00 PM</option>
-                          <option>8:00 AM - 11:00 PM</option>
-                          <option>10:00 AM - 9:00 PM</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Industry</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900 ">
-                          <option>Restaurant</option>
-                          <option>Retail</option>
-                          <option>Healthcare</option>
-                          <option>Hospitality</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Shift Management</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Allow shift swapping</p>
-                          <p className="text-sm text-gray-700">Let staff swap shifts with each other</p>
-                        </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Require manager approval</p>
-                          <p className="text-sm text-gray-600">All shift changes require approval</p>
-                        </div>
-                        <div className="w-12 h-6 bg-[#D5001C] rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">Overtime warnings</p>
-                          <p className="text-sm text-gray-600">Alert when staff approach overtime</p>
-                        </div>
-                        <div className="w-12 h-6 bg-gray-300 rounded-full relative">
-                          <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                        </div>
-                      )}
-
-            {activeSection === 'integrations' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Integrations</h2>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold">Q</span>
-                      </div>
-                            <div>
-                        <h3 className="font-medium text-gray-900">QuickBooks</h3>
-                        <p className="text-sm text-gray-600">Sync payroll and accounting data</p>
-                      </div>
-                    </div>
-                    <button className="px-4 py-2 bg-[#D5001C] hover:bg-[#B0001A] text-white rounded-lg font-medium transition-colors">
-                      Connect
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold">S</span>
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Slack</h3>
-                        <p className="text-sm text-gray-600">Send notifications to Slack channels</p>
-                      </div>
-                    </div>
-                    <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
-                      Disconnect
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold">Z</span>
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Zapier</h3>
-                        <p className="text-sm text-gray-600">Automate workflows with 5000+ apps</p>
-                      </div>
-                    </div>
-                    <button className="px-4 py-2 bg-[#D5001C] hover:bg-[#B0001A] text-white rounded-lg font-medium transition-colors">
-                      Connect
-                    </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-            {activeSection === 'billing' && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">Billing & Subscription</h2>
-                
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-[#D5001C] to-[#B0001A] rounded-lg p-6 text-white">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold mb-2">Professional Plan</h3>
-                        <p className="text-red-100">$29/month • Up to 50 staff members</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold">$29</p>
-                        <p className="text-red-100 text-sm">per month</p>
-                      </div>
-                    </div>
-                        </div>
-                        
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
-                      <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                            <span className="text-white text-sm font-bold">V</span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">Visa ending in 4242</p>
-                            <p className="text-sm text-gray-600">Expires 12/25</p>
-                          </div>
-                        </div>
-                        <button className="text-[#D5001C] hover:text-[#B0001A] font-medium">
-                          Update
-                            </button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">Billing History</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div>
-                            <p className="font-medium text-gray-900">Dec 1, 2024</p>
-                            <p className="text-sm text-gray-600">Professional Plan</p>
-                          </div>
-                          <span className="font-medium text-gray-900">$29.00</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div>
-                            <p className="font-medium text-gray-900">Nov 1, 2024</p>
-                            <p className="text-sm text-gray-600">Professional Plan</p>
-                          </div>
-                          <span className="font-medium text-gray-900">$29.00</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="border-t border-gray-200 pt-6">
-                    <button className="text-red-600 hover:text-red-800 font-medium">
-                      Cancel Subscription
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+      {/* Settings Categories */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* General Settings */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">⚙️</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">General</h3>
+              <p className="text-gray-600 text-sm">Basic system preferences</p>
+            </div>
           </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Timezone</label>
+              <select
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white"
+              >
+                <option value="America/New_York" className="text-gray-900 bg-white">Eastern Time (ET)</option>
+                <option value="America/Chicago" className="text-gray-900 bg-white">Central Time (CT)</option>
+                <option value="America/Denver" className="text-gray-900 bg-white">Mountain Time (MT)</option>
+                <option value="America/Los_Angeles" className="text-gray-900 bg-white">Pacific Time (PT)</option>
+              </select>
+              <p className="text-gray-500 text-sm mt-2">This affects all time displays in the application</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Language</label>
+              <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white">
+                <option value="en" className="text-gray-900 bg-white">English</option>
+                <option value="es" className="text-gray-900 bg-white">Spanish</option>
+                <option value="fr" className="text-gray-900 bg-white">French</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Date Format</label>
+              <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white">
+                <option value="MM/DD/YYYY" className="text-gray-900 bg-white">MM/DD/YYYY</option>
+                <option value="DD/MM/YYYY" className="text-gray-900 bg-white">DD/MM/YYYY</option>
+                <option value="YYYY-MM-DD" className="text-gray-900 bg-white">YYYY-MM-DD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Notification Settings */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">🔔</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Notifications</h3>
+              <p className="text-gray-600 text-sm">Manage your alerts</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Email Notifications</label>
+                <p className="text-gray-500 text-sm">Receive updates via email</p>
+              </div>
+              <button className="w-12 h-6 bg-green-500 rounded-full relative">
+                <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Push Notifications</label>
+                <p className="text-gray-500 text-sm">Browser push notifications</p>
+              </div>
+              <button className="w-12 h-6 bg-gray-300 rounded-full relative">
+                <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform"></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-semibold text-gray-700">Shift Reminders</label>
+                <p className="text-gray-500 text-sm">Remind before shifts</p>
+              </div>
+              <button className="w-12 h-6 bg-green-500 rounded-full relative">
+                <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Settings */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Security</h3>
+              <p className="text-gray-600 text-sm">Account security settings</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Change Password</div>
+              <div className="text-gray-500 text-sm">Update your account password</div>
+            </button>
+
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Two-Factor Authentication</div>
+              <div className="text-gray-500 text-sm">Add extra security layer</div>
+            </button>
+
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Login History</div>
+              <div className="text-gray-500 text-sm">View recent login activity</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Save Button */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">Save Changes</h3>
+            <p className="text-gray-600 text-sm">Your settings will be applied immediately</p>
+          </div>
+          <button className="bg-gradient-to-r from-green-500 to-green-600 hover:shadow-lg transform hover:scale-105 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300">
+            Save Settings
+          </button>
         </div>
       </div>
     </div>
@@ -3602,21 +2993,247 @@ function SettingsTab({ timezone, setTimezone }: any) {
 
 function ProfileTab({ user, handleLogout }: any) {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-lg">
-      <h3 className="text-xl font-bold text-gray-900">Profile</h3>
-      <div className="space-y-4">
-        <div>
-          <p className="text-gray-600">Email</p>
-          <p className="font-medium text-gray-600">{user?.email}</p>
+    <div className="space-y-8">
+      {/* Professional Header */}
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-pink-500/90 to-pink-600/90 shadow-xl">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
-                            <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                            >
-          Logout
-                            </button>
-                        </div>
-                      </div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-3xl font-black text-white">{user?.email?.charAt(0).toUpperCase()}</span>
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Profile</h1>
+              <p className="text-pink-100 text-lg font-light">Manage your account and preferences</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">Manager</div>
+              <div className="text-pink-100 text-sm">Role</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">Active</div>
+              <div className="text-pink-100 text-sm">Status</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white">30d</div>
+              <div className="text-pink-100 text-sm">Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Information */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Personal Information */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">👤</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Personal Information</h3>
+              <p className="text-gray-600 text-sm">Your basic account details</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+              <div className="px-4 py-3 bg-gray-50 rounded-xl font-medium text-gray-900">
+                {user?.email}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+              <input
+                type="text"
+                defaultValue="Manager User"
+                placeholder="Enter your full name"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+              <input
+                type="tel"
+                defaultValue="+1 (555) 123-4567"
+                placeholder="Enter your phone number"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Job Title</label>
+              <input
+                type="text"
+                defaultValue="Restaurant Manager"
+                placeholder="Enter your job title"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Account Settings */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">⚙️</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Account Settings</h3>
+              <p className="text-gray-600 text-sm">Manage your account preferences</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Change Password</div>
+              <div className="text-gray-500 text-sm">Update your account password</div>
+            </button>
+
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Two-Factor Authentication</div>
+              <div className="text-gray-500 text-sm">Add extra security layer</div>
+            </button>
+
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Privacy Settings</div>
+              <div className="text-gray-500 text-sm">Manage your privacy preferences</div>
+            </button>
+
+            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+              <div className="font-semibold text-gray-700">Notification Preferences</div>
+              <div className="text-gray-500 text-sm">Customize your notifications</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Activity & Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">📊</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Activity</h3>
+              <p className="text-gray-600 text-sm">Recent account activity</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Last Login</span>
+              <span className="text-sm font-semibold text-gray-900">2 hours ago</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Sessions This Week</span>
+              <span className="text-sm font-semibold text-gray-900">12</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Account Created</span>
+              <span className="text-sm font-semibold text-gray-900">30 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">📈</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Performance</h3>
+              <p className="text-gray-600 text-sm">Your management stats</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Shifts Managed</span>
+              <span className="text-sm font-semibold text-gray-900">156</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Staff Supervised</span>
+              <span className="text-sm font-semibold text-gray-900">24</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Avg Fill Rate</span>
+              <span className="text-sm font-semibold text-gray-900">87%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-2xl">🏆</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Achievements</h3>
+              <p className="text-gray-600 text-sm">Your accomplishments</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🥇</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-900">Perfect Week</div>
+                <div className="text-xs text-gray-500">100% fill rate for a week</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🎯</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-900">Efficiency Master</div>
+                <div className="text-xs text-gray-500">Optimized 50+ shifts</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">⭐</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-900">Team Leader</div>
+                <div className="text-xs text-gray-500">Managed 20+ staff members</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">Account Actions</h3>
+            <p className="text-gray-600 text-sm">Manage your account settings and preferences</p>
+          </div>
+          <div className="flex gap-4">
+            <button className="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors">
+              Cancel Changes
+            </button>
+            <button className="bg-gradient-to-r from-pink-500 to-pink-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
+              Save Changes
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -3654,7 +3271,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-                    </div>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
           <input
@@ -3664,8 +3281,8 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-                </div>
-            </div>
+        </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -3676,7 +3293,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, email: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-          </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
@@ -3687,7 +3304,7 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, phone: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-        </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
@@ -3728,23 +3345,23 @@ function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; o
           onChange={(e) => setFormData({...formData, hireDate: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-              </div>
+      </div>
 
       <div className="flex gap-3 pt-4">
-                <button
+        <button
           type="button"
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
+        >
+          Cancel
+        </button>
+        <button
           type="submit"
           className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
         >
           Add Staff
-                </button>
-              </div>
+        </button>
+      </div>
     </form>
   )
 }
@@ -3780,7 +3397,7 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-            </div>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
           <input
@@ -3790,8 +3407,8 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
           />
-          </div>
         </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -3813,7 +3430,7 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
           onChange={(e) => setFormData({...formData, phone: e.target.value})}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
         />
-              </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
@@ -3869,20 +3486,20 @@ function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: 
       </div>
 
       <div className="flex gap-3 pt-4">
-                <button
+        <button
           type="button"
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-                >
+        >
           Cancel
-                </button>
-                <button
+        </button>
+        <button
           type="submit"
           className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
         >
           Update Staff
-                </button>
-              </div>
+        </button>
+      </div>
     </form>
   )
 }
