@@ -83,15 +83,14 @@ function timeToMinutes(time: string): number {
 }
 
 // Reusable Logo Component
-const ShiftLystLogo = ({ size = 50, className = '' }: { size?: number; className?: string }) => (
-  <div className={`relative ${className} overflow-hidden`} style={{ width: size, height: size }}>
+const ShiftLystLogo = ({ size = 80, className = '' }: { size?: number; className?: string }) => (
+  <div className={`relative ${className}`} style={{ width: size, height: size }}>
     <Image
-      src="/assets/shiftlyst_logo2.png"
+      src="/assets/shiftlyst_logo.png"
       alt="ShiftLyst Logo"
       width={size}
       height={size}
-      className="object-cover rounded-lg scale-125"
-      style={{ objectPosition: 'center' }}
+      className="object-contain rounded-lg"
       priority
     />
   </div>

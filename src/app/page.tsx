@@ -14,15 +14,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 // Reusable Logo Component
-const ShiftLystLogo = ({ size = 50, className = '' }: { size?: number; className?: string }) => (
-  <div className={`relative ${className} overflow-hidden`} style={{ width: size, height: size }}>
+const ShiftLystLogo = ({ size = 80, className = '' }: { size?: number; className?: string }) => (
+  <div className={`relative ${className}`} style={{ width: size, height: size }}>
     <Image
-      src="/assets/shiftlyst_logo2.png"
+      src="/assets/shiftlyst_logo.png"
       alt="ShiftLyst Logo"
       width={size}
       height={size}
-      className="object-cover rounded-lg scale-125"
-      style={{ objectPosition: 'center' }}
+      className="object-contain rounded-lg"
       priority
     />
   </div>
@@ -72,7 +71,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <ShiftLystLogo size={50} className="mr-0" />
+              <ShiftLystLogo size={50} className="mr-2" />
               <h1 className="text-2xl font-black text-gray-900 tracking-tight">ShiftLyst</h1>
             </div>
             <div className="flex items-center space-x-6">
@@ -224,7 +223,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
-              <ShiftLystLogo size={50} className="mr-0" />
+              <ShiftLystLogo size={50} className="mr-2" />
               <h3 className="text-xl font-black text-white">ShiftLyst</h3>
             </div>
             <p className="text-gray-400 font-light">
