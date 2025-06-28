@@ -41,6 +41,24 @@ interface Shift {
   createdAt: Timestamp
 }
 
+interface Staff {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  role: string
+  payRate: number
+  isActive: boolean
+  hireDate: string
+  emergencyContact: {
+    name: string
+    phone: string
+    relationship: string
+  }
+  createdAt: Timestamp
+}
+
 // Utility function to format time with AM/PM
 function formatTime(time: string): string {
   const [hours, minutes] = time.split(':')
@@ -94,7 +112,13 @@ export default function ManagerDashboardPage() {
   const { user, loading } = useAuth()
 
   // Navigation state
-  const [activeTab, setActiveTab] = useState('dashboard')
+  const [activeTab, setActiveTab] = useState(() => {
+    // Get the active tab from localStorage on initial load
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('activeTab') || 'dashboard'
+    }
+    return 'dashboard'
+  })
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
 
@@ -117,6 +141,7 @@ export default function ManagerDashboardPage() {
 
   // Data states
   const [shifts, setShifts] = useState<Shift[]>([])
+  const [staff, setStaff] = useState<Staff[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -141,6 +166,14 @@ export default function ManagerDashboardPage() {
     'Delivery Driver', 'Manager'
   ]
 
+  // Handle tab change and persist to localStorage
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeTab', tab)
+    }
+  }
+
   useEffect(() => {
     if (loading) return
     
@@ -150,6 +183,7 @@ export default function ManagerDashboardPage() {
     }
     
     const q = query(collection(db, 'shifts'), orderBy('createdAt', 'desc'))
+    const staffQ = query(collection(db, 'staff'), orderBy('createdAt', 'desc'))
     
     const unsubscribeShifts = onSnapshot(
       q,
@@ -181,16 +215,54 @@ export default function ManagerDashboardPage() {
         })
         
         setShifts(shiftsData)
-        setDataLoading(false)
       },
       err => {
         console.error('Firebase query error:', err)
         setError('Failed to load shifts: ' + err.message)
+      }
+    )
+
+    const unsubscribeStaff = onSnapshot(
+      staffQ,
+      snapshot => {
+        const staffData: Staff[] = []
+        
+        snapshot.forEach(doc => {
+          const data = doc.data()
+          const staffMember: Staff = {
+            id: doc.id,
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            role: data.role || '',
+            payRate: data.payRate || 0,
+            isActive: data.isActive !== undefined ? data.isActive : true,
+            hireDate: data.hireDate || '',
+            emergencyContact: {
+              name: data.emergencyContact?.name || '',
+              phone: data.emergencyContact?.phone || '',
+              relationship: data.emergencyContact?.relationship || ''
+            },
+            createdAt: data.createdAt || Timestamp.now(),
+          }
+          staffData.push(staffMember)
+        })
+        
+        setStaff(staffData)
+        setDataLoading(false)
+      },
+      err => {
+        console.error('Firebase staff query error:', err)
+        setError('Failed to load staff: ' + err.message)
         setDataLoading(false)
       }
     )
 
-    return () => unsubscribeShifts()
+    return () => {
+      unsubscribeShifts()
+      unsubscribeStaff()
+    }
   }, [user, loading, router])
 
   // Click outside handler for dropdowns
@@ -408,7 +480,7 @@ export default function ManagerDashboardPage() {
       case 'shifts':
         return <ShiftsTab shifts={shifts} sortBy={sortBy} setSortBy={setSortBy} dataLoading={dataLoading} sortShifts={sortShifts} formatDate={formatDate} formatTime={formatTime} confirmDelete={confirmDelete} confirmCancel={confirmCancel} setSuccess={setSuccess} setError={setError} />
       case 'staff':
-        return <StaffTab />
+        return <StaffTab staff={staff} dataLoading={dataLoading} setSuccess={setSuccess} setError={setError} />
       case 'analytics':
         return <AnalyticsTab shifts={shifts} />
       case 'notifications':
@@ -450,7 +522,7 @@ export default function ManagerDashboardPage() {
         <div className="p-6 w-64">
           <div className="flex items-center justify-between mb-8">
             <button 
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => handleTabChange('dashboard')}
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <ShiftLystLogo size={40} />
@@ -476,7 +548,7 @@ export default function ManagerDashboardPage() {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleTabChange(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left ${
                   activeTab === item.id
                     ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
@@ -550,7 +622,7 @@ export default function ManagerDashboardPage() {
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false)
-                        setActiveTab('profile')
+                        handleTabChange('profile')
                       }}
                       className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-3"
                     >
@@ -563,7 +635,7 @@ export default function ManagerDashboardPage() {
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false)
-                        setActiveTab('settings')
+                        handleTabChange('settings')
                       }}
                       className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-3"
                     >
@@ -1273,7 +1345,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
             </button>
 
             {/* Help Button */}
-            <div className="relative">
+                <div className="relative">
               <button
                 onClick={() => setShowHelp(!showHelp)}
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
@@ -1295,7 +1367,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                     >
                       ✕
                     </button>
-                  </div>
+                </div>
                   <div className="space-y-2 text-sm">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -1304,16 +1376,16 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">W</kbd> Week view</div>
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">M</kbd> Month view</div>
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">D</kbd> Day view</div>
-                        </div>
-                      </div>
-                      <div>
+              </div>
+            </div>
+            <div>
                         <div className="font-medium text-gray-700 mb-1">Navigation</div>
                         <div className="space-y-1 text-gray-600">
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">← →</kbd> Navigate</div>
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">↑ ↓</kbd> Week/Day</div>
                           <div><kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">T</kbd> Today</div>
-                        </div>
-                      </div>
+            </div>
+          </div>
                     </div>
                     <div className="pt-2 border-t border-gray-200">
                       <div className="text-gray-600">
@@ -1541,30 +1613,30 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">Shift Details</h3>
-              <button
+        <button
                 onClick={() => setShowShiftModal(false)}
                 className="text-gray-400 hover:text-gray-600"
-              >
+        >
                 ✕
-              </button>
-            </div>
-            
+        </button>
+      </div>
+
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-700">Role</label>
                 <p className="text-gray-900 font-medium">{selectedShift.role}</p>
-              </div>
+          </div>
               
               <div>
                 <label className="text-sm font-medium text-gray-700">Date & Time</label>
                 <p className="text-gray-900">{formatDate(selectedShift.date)}</p>
                 <p className="text-gray-900">{formatTime(selectedShift.startTime)} - {formatTime(selectedShift.endTime)}</p>
-              </div>
+          </div>
               
               <div>
                 <label className="text-sm font-medium text-gray-700">Pay Rate</label>
                 <p className="text-gray-900">${selectedShift.payRate}/hr</p>
-              </div>
+          </div>
               
               <div>
                 <label className="text-sm font-medium text-gray-700">Status</label>
@@ -1575,13 +1647,13 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 }`}>
                   {selectedShift.status}
                 </span>
-              </div>
+          </div>
               
               <div>
                 <label className="text-sm font-medium text-gray-700">Staffing</label>
                 <p className="text-gray-900">{selectedShift.filledSlots}/{selectedShift.slots} positions filled</p>
-              </div>
-              
+        </div>
+
               {selectedShift.notes && (
                 <div>
                   <label className="text-sm font-medium text-gray-700">Notes</label>
@@ -1963,478 +2035,279 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
   )
 }
 
-function StaffTab() {
+function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
   const [showAddStaff, setShowAddStaff] = useState(false)
   const [selectedStaff, setSelectedStaff] = useState<any>(null)
 
-  // Mock staff data - in real app this would come from Firestore
-  const [staff] = useState([
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@example.com',
-      phone: '+1 (555) 123-4567',
-      role: 'Server',
-      status: 'active',
-      avatar: 'SJ',
-      hireDate: '2023-01-15',
-      totalShifts: 156,
-      rating: 4.8,
-      availability: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      payRate: 18,
-      skills: ['Customer Service', 'POS Systems', 'Food Safety']
-    },
-    {
-      id: '2',
-      name: 'Mike Chen',
-      email: 'mike.chen@example.com',
-      phone: '+1 (555) 234-5678',
-      role: 'Bartender',
-      status: 'active',
-      avatar: 'MC',
-      hireDate: '2022-11-20',
-      totalShifts: 203,
-      rating: 4.9,
-      availability: ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      payRate: 22,
-      skills: ['Mixology', 'Inventory Management', 'Customer Service']
-    },
-    {
-      id: '3',
-      name: 'Emma Rodriguez',
-      email: 'emma.rodriguez@example.com',
-      phone: '+1 (555) 345-6789',
-      role: 'Host',
-      status: 'active',
-      avatar: 'ER',
-      hireDate: '2023-03-10',
-      totalShifts: 89,
-      rating: 4.6,
-      availability: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-      payRate: 16,
-      skills: ['Reservation Management', 'Customer Service', 'Multi-tasking']
-    },
-    {
-      id: '4',
-      name: 'David Kim',
-      email: 'david.kim@example.com',
-      phone: '+1 (555) 456-7890',
-      role: 'Kitchen Staff',
-      status: 'inactive',
-      avatar: 'DK',
-      hireDate: '2022-08-05',
-      totalShifts: 312,
-      rating: 4.7,
-      availability: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      payRate: 20,
-      skills: ['Food Preparation', 'Kitchen Safety', 'Inventory Management']
-    },
-    {
-      id: '5',
-      name: 'Lisa Thompson',
-      email: 'lisa.thompson@example.com',
-      phone: '+1 (555) 567-8901',
-      role: 'Server',
-      status: 'active',
-      avatar: 'LT',
-      hireDate: '2023-02-28',
-      totalShifts: 134,
-      rating: 4.5,
-      availability: ['Friday', 'Saturday', 'Sunday'],
-      payRate: 17,
-      skills: ['Customer Service', 'Wine Knowledge', 'Team Leadership']
-    }
-  ])
-
   const roles = ['all', 'Server', 'Bartender', 'Host', 'Kitchen Staff', 'Manager']
-  const statuses = ['all', 'active', 'inactive', 'on leave']
 
-  const filteredStaff = staff.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  // Staff management functions
+  const handleAddStaff = async (staffData: any) => {
+    try {
+      await addDoc(collection(db, 'staff'), {
+        ...staffData,
+        createdAt: Timestamp.now()
+      })
+      setSuccess('Staff member added successfully!')
+      setShowAddStaff(false)
+    } catch (error) {
+      console.error('Error adding staff:', error)
+      setError('Failed to add staff member')
+    }
+  }
+
+  const handleUpdateStaff = async (staffId: string, staffData: any) => {
+    try {
+      await updateDoc(doc(db, 'staff', staffId), staffData)
+      setSuccess('Staff member updated successfully!')
+      setSelectedStaff(null)
+    } catch (error) {
+      console.error('Error updating staff:', error)
+      setError('Failed to update staff member')
+    }
+  }
+
+  const handleDeleteStaff = async (staffId: string) => {
+    try {
+      await deleteDoc(doc(db, 'staff', staffId))
+      setSuccess('Staff member deleted successfully!')
+      setSelectedStaff(null)
+    } catch (error) {
+      console.error('Error deleting staff:', error)
+      setError('Failed to delete staff member')
+    }
+  }
+
+  // Filter staff based on search and filters
+  const filteredStaff = staff.filter((member: Staff) => {
+    const matchesSearch = member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    
     const matchesRole = filterRole === 'all' || member.role === filterRole
-    const matchesStatus = filterStatus === 'all' || member.status === filterStatus
+    const matchesStatus = filterStatus === 'all' || 
+                         (filterStatus === 'active' && member.isActive) ||
+                         (filterStatus === 'inactive' && !member.isActive)
     
     return matchesSearch && matchesRole && matchesStatus
   })
 
-  const activeStaff = staff.filter(member => member.status === 'active').length
-  const totalStaff = staff.length
+  if (dataLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Loading staff...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Staff Directory</h1>
-          <p className="text-gray-300">Manage your team members and their schedules</p>
-        </div>
-        <button 
-          onClick={() => setShowAddStaff(true)}
-          className="bg-[#D5001C] hover:bg-[#B0001A] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
-        >
-          <span>+</span>
-          Add Staff Member
-        </button>
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white">
+        <h1 className="text-2xl font-bold text-white">Staff Directory</h1>
+        <p className="text-orange-100">Manage your team members and their information</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-700 text-sm font-medium">Active Staff</p>
-              <p className="text-3xl font-bold text-green-600">{activeStaff}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">👥</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-700 text-sm font-medium">Total Staff</p>
-              <p className="text-3xl font-bold text-blue-600">{totalStaff}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📊</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-yellow-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-700 text-sm font-medium">Avg Rating</p>
-              <p className="text-3xl font-bold text-yellow-600">4.7</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">⭐</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-purple-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-700 text-sm font-medium">This Week</p>
-              <p className="text-3xl font-bold text-purple-600">23</p>
-            </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📅</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
+      {/* Controls */}
       <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1">
-            <div className="relative">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            {/* Search */}
+            <div className="relative flex-1 max-w-md">
               <input
                 type="text"
-                placeholder="Search by name or email..."
+                placeholder="Search staff..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent placeholder-gray-400 text-gray-900"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
               />
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                🔍
-                            </div>
-                            </div>
+              <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
+            {/* Filters */}
+            <div className="flex gap-2">
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+              >
+                {roles.map(role => (
+                  <option key={role} value={role}>
+                    {role === 'all' ? 'All Roles' : role}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
           </div>
-          
-          <select
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent bg-white text-gray-900 font-medium"
+
+          {/* Add Staff Button */}
+          <button
+            onClick={() => setShowAddStaff(true)}
+            className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
           >
-            {roles.map(role => (
-              <option key={role} value={role}>
-                {role === 'all' ? 'All Roles' : role}
-              </option>
-            ))}
-          </select>
-          
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent bg-white text-gray-900 font-medium"
-          >
-            {statuses.map(status => (
-              <option key={status} value={status}>
-                {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
-              </option>
-            ))}
-          </select>
+            Add Staff Member
+          </button>
         </div>
       </div>
 
-      {/* Staff Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredStaff.map(member => (
-          <div key={member.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-16 h-16 bg-[#D5001C] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  {member.avatar}
-                </div>
-                <div className="text-right">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    member.status === 'active' ? 'bg-green-100 text-green-800' :
-                    member.status === 'inactive' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {member.status}
-                              </span>
-                  <p className="text-sm text-gray-500 mt-1">{member.role}</p>
-                            </div>
+      {/* Staff List */}
+      <div className="bg-white rounded-xl shadow-lg">
+        {filteredStaff.length === 0 ? (
+          <div className="p-8 text-center">
+            <div className="text-gray-400 text-6xl mb-4">👥</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No staff members found</h3>
+            <p className="text-gray-600 mb-4">
+              {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
+                ? 'Try adjusting your search or filters'
+                : 'Get started by adding your first staff member'
+              }
+            </p>
+            {!searchTerm && filterRole === 'all' && filterStatus === 'all' && (
+              <button
+                onClick={() => setShowAddStaff(true)}
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                Add First Staff Member
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pay Rate</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredStaff.map((member: Staff) => (
+                  <tr key={member.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                            <span className="text-sm font-medium text-orange-800">
+                              {member.firstName.charAt(0)}{member.lastName.charAt(0)}
+                            </span>
                           </div>
-              
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-              <p className="text-gray-600 text-sm">{member.email}</p>
-                          </div>
-            
-            {/* Content */}
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 text-sm font-medium">Pay Rate</span>
-                <span className="font-bold text-gray-900">${member.payRate}/hr</span>
                         </div>
-                        
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 text-sm font-medium">Total Shifts</span>
-                <span className="font-bold text-gray-900">{member.totalShifts}</span>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {member.firstName} {member.lastName}
                           </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 text-sm font-medium">Rating</span>
-                <div className="flex items-center gap-1">
-                  <span className="font-bold text-gray-900">{member.rating}</span>
-                  <span className="text-yellow-500">⭐</span>
-                </div>
+                          <div className="text-sm text-gray-500">
+                            Hired: {member.hireDate}
+                          </div>
+                        </div>
                       </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 text-sm font-medium">Hired</span>
-                <span className="font-bold text-gray-900">{new Date(member.hireDate).toLocaleDateString()}</span>
-              </div>
-              
-              {/* Skills */}
-              <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">Skills</p>
-                <div className="flex flex-wrap gap-1">
-                  {member.skills.slice(0, 2).map((skill: string, index: number) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded font-medium">
-                      {skill}
-                            </span>
-                  ))}
-                  {member.skills.length > 2 && (
-                    <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded font-medium">
-                      +{member.skills.length - 2} more
-                            </span>
-                          )}
-                </div>
-              </div>
-            </div>
-            
-            {/* Actions */}
-            <div className="border-t border-gray-100 p-4">
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setSelectedStaff(member)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium transition-colors"
-                >
-                  View Details
-                </button>
-                <button className="flex-1 bg-[#D5001C] hover:bg-[#B0001A] text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors">
-                  Schedule
-                </button>
-              </div>
-            </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {member.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{member.email}</div>
+                      <div className="text-sm text-gray-500">{member.phone}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      ${member.payRate}/hr
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        member.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {member.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => setSelectedStaff(member)}
+                        className="text-orange-600 hover:text-orange-900 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteStaff(member.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
+        )}
       </div>
-
-      {/* Empty State */}
-      {filteredStaff.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl text-gray-400">👥</span>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No staff members found</h3>
-          <p className="text-gray-600 mb-6">Try adjusting your search or filters</p>
-          <button 
-            onClick={() => {
-              setSearchTerm('')
-              setFilterRole('all')
-              setFilterStatus('all')
-            }}
-            className="text-[#D5001C] hover:text-[#B0001A] font-medium"
-          >
-            Clear filters
-          </button>
-                        </div>
-                      )}
-
-      {/* Staff Detail Modal */}
-      {selectedStaff && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Staff Details</h2>
-                <button 
-                  onClick={() => setSelectedStaff(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-[#D5001C] rounded-full flex items-center justify-center text-white font-bold text-2xl">
-                  {selectedStaff.avatar}
-                </div>
-                            <div>
-                  <h3 className="text-xl font-bold text-gray-900">{selectedStaff.name}</h3>
-                  <p className="text-gray-600">{selectedStaff.role}</p>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    selectedStaff.status === 'active' ? 'bg-green-100 text-green-800' :
-                    selectedStaff.status === 'inactive' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {selectedStaff.status}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-gray-700 text-sm font-medium">Email</p>
-                  <p className="font-medium text-gray-900">{selectedStaff.email}</p>
-                </div>
-                <div>
-                  <p className="text-gray-700 text-sm font-medium">Phone</p>
-                  <p className="font-medium text-gray-900">{selectedStaff.phone}</p>
-                </div>
-                <div>
-                  <p className="text-gray-700 text-sm font-medium">Pay Rate</p>
-                  <p className="font-medium text-gray-900">${selectedStaff.payRate}/hr</p>
-                </div>
-                <div>
-                  <p className="text-gray-700 text-sm font-medium">Hire Date</p>
-                  <p className="font-medium text-gray-900">{new Date(selectedStaff.hireDate).toLocaleDateString()}</p>
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">Skills</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedStaff.skills.map((skill: string, index: number) => (
-                    <span key={index} className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded font-medium">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">Availability</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedStaff.availability.map((day: string, index: number) => (
-                    <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded font-medium">
-                      {day}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-gray-200 flex gap-3">
-              <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors">
-                Edit Staff
-              </button>
-              <button className="flex-1 bg-[#D5001C] hover:bg-[#B0001A] text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                View Schedule
-              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
 
       {/* Add Staff Modal */}
       {showAddStaff && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Add Staff Member</h2>
-                        <button
-                  onClick={() => setShowAddStaff(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                        >
-                  ✕
-                        </button>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900 placeholder-gray-400" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900 placeholder-gray-400" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input type="tel" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900 placeholder-gray-400" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900 bg-white">
-                  <option>Server</option>
-                  <option>Bartender</option>
-                  <option>Host</option>
-                  <option>Kitchen Staff</option>
-                  <option>Manager</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pay Rate ($/hr)</label>
-                <input type="number" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D5001C] focus:border-transparent text-gray-900 placeholder-gray-400" />
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-gray-200 flex gap-3">
-                        <button
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Add Staff Member</h3>
+              <button
                 onClick={() => setShowAddStaff(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                Cancel
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
               </button>
-              <button className="flex-1 bg-[#D5001C] hover:bg-[#B0001A] text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                Add Staff
-                        </button>
-                      </div>
-                </div>
-              </div>
-            )}
+            </div>
+            
+            <AddStaffForm 
+              onSubmit={handleAddStaff}
+              onCancel={() => setShowAddStaff(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Edit Staff Modal */}
+      {selectedStaff && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Edit Staff Member</h3>
+              <button
+                onClick={() => setSelectedStaff(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <EditStaffForm 
+              staff={selectedStaff}
+              onSubmit={(data) => handleUpdateStaff(selectedStaff.id, data)}
+              onCancel={() => setSelectedStaff(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -3744,5 +3617,272 @@ function ProfileTab({ user, handleLogout }: any) {
         </button>
       </div>
     </div>
+  )
+}
+
+// Add Staff Form Component
+function AddStaffForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; onCancel: () => void }) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    payRate: 0,
+    hireDate: '',
+    emergencyContact: {
+      name: '',
+      phone: '',
+      relationship: ''
+    }
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <input
+            type="text"
+            required
+            value={formData.firstName}
+            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <input
+            type="text"
+            required
+            value={formData.lastName}
+            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          required
+          value={formData.email}
+          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input
+          type="tel"
+          required
+          value={formData.phone}
+          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <select
+          required
+          value={formData.role}
+          onChange={(e) => setFormData({...formData, role: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        >
+          <option value="">Select Role</option>
+          <option value="Server">Server</option>
+          <option value="Bartender">Bartender</option>
+          <option value="Host">Host</option>
+          <option value="Kitchen Staff">Kitchen Staff</option>
+          <option value="Manager">Manager</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Pay Rate ($/hr)</label>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          value={formData.payRate}
+          onChange={(e) => setFormData({...formData, payRate: parseFloat(e.target.value)})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+        <input
+          type="date"
+          required
+          value={formData.hireDate}
+          onChange={(e) => setFormData({...formData, hireDate: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+        >
+          Add Staff
+        </button>
+      </div>
+    </form>
+  )
+}
+
+// Edit Staff Form Component
+function EditStaffForm({ staff, onSubmit, onCancel }: { staff: Staff; onSubmit: (data: any) => void; onCancel: () => void }) {
+  const [formData, setFormData] = useState({
+    firstName: staff.firstName,
+    lastName: staff.lastName,
+    email: staff.email,
+    phone: staff.phone,
+    role: staff.role,
+    payRate: staff.payRate,
+    hireDate: staff.hireDate,
+    isActive: staff.isActive,
+    emergencyContact: staff.emergencyContact
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <input
+            type="text"
+            required
+            value={formData.firstName}
+            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <input
+            type="text"
+            required
+            value={formData.lastName}
+            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          required
+          value={formData.email}
+          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input
+          type="tel"
+          required
+          value={formData.phone}
+          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <select
+          required
+          value={formData.role}
+          onChange={(e) => setFormData({...formData, role: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        >
+          <option value="Server">Server</option>
+          <option value="Bartender">Bartender</option>
+          <option value="Host">Host</option>
+          <option value="Kitchen Staff">Kitchen Staff</option>
+          <option value="Manager">Manager</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Pay Rate ($/hr)</label>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          value={formData.payRate}
+          onChange={(e) => setFormData({...formData, payRate: parseFloat(e.target.value)})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+        <input
+          type="date"
+          required
+          value={formData.hireDate}
+          onChange={(e) => setFormData({...formData, hireDate: e.target.value})}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
+        />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="isActive"
+          checked={formData.isActive}
+          onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
+          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+        />
+        <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
+          Active Staff Member
+        </label>
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+        >
+          Update Staff
+        </button>
+      </div>
+    </form>
   )
 }
