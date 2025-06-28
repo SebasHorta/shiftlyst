@@ -81,6 +81,13 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options)
 }
 
+// Utility function to extract first name from full name
+function getFirstName(fullName: string): string {
+  if (!fullName || fullName.trim() === '') return 'Manager'
+  const nameParts = fullName.trim().split(' ')
+  return nameParts[0] || 'Manager'
+}
+
 // Reusable Logo Component
 const ShiftLystLogo = ({ size = 80, className = '' }: { size?: number; className?: string }) => (
   <div className={`relative ${className}`} style={{ width: size, height: size }}>
@@ -97,8 +104,8 @@ const ShiftLystLogo = ({ size = 80, className = '' }: { size?: number; className
 
 // Navigation Items
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: '📊', color: 'from-blue-500 to-blue-600' },
-  { id: 'calendar', label: 'Calendar', icon: '📅', color: 'from-green-500 to-green-600' },
+  { id: 'dashboard', label: 'Dashboard', icon: '📊', color: 'from-red-500 to-red-600' },
+  { id: 'calendar', label: 'Calendar', icon: '📅', color: 'from-blue-500 to-blue-600' },
   { id: 'shifts', label: 'Shifts', icon: '📋', color: 'from-purple-500 to-purple-600' },
   { id: 'staff', label: 'Staff', icon: '👥', color: 'from-orange-500 to-orange-600' },
   { id: 'analytics', label: 'Analytics', icon: '📈', color: 'from-indigo-500 to-indigo-600' },
@@ -138,6 +145,17 @@ export default function ManagerDashboardPage() {
 
   // Settings state
   const [timezone, setTimezone] = useState('America/New_York')
+  const [language, setLanguage] = useState('en')
+  const [dateFormat, setDateFormat] = useState('MM/DD/YYYY')
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [pushNotifications, setPushNotifications] = useState(false)
+  const [shiftReminders, setShiftReminders] = useState(true)
+
+  // Profile state
+  const [fullName, setFullName] = useState('Manager User')
+  const [phoneNumber, setPhoneNumber] = useState('+1 (555) 123-4567')
+  const [jobTitle, setJobTitle] = useState('Restaurant Manager')
+  const [isSaving, setIsSaving] = useState(false)
 
   // Data states
   const [shifts, setShifts] = useState<Shift[]>([])
@@ -167,10 +185,15 @@ export default function ManagerDashboardPage() {
   ]
 
   // Handle tab change and persist to localStorage
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: string, options?: { openForm?: boolean }) => {
     setActiveTab(tab)
     if (typeof window !== 'undefined') {
       localStorage.setItem('activeTab', tab)
+    }
+    
+    // Store form state for tabs that need it
+    if (options?.openForm && typeof window !== 'undefined') {
+      localStorage.setItem(`${tab}_openForm`, 'true')
     }
   }
 
@@ -470,27 +493,130 @@ export default function ManagerDashboardPage() {
     return date.toISOString().split('T')[0]
   }
 
-  // Render different tabs
+  // Save handlers
+  const handleSaveSettings = async () => {
+    setIsSaving(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Save to localStorage for demo purposes
+      localStorage.setItem('shiftlyst_settings', JSON.stringify({
+        timezone,
+        language,
+        dateFormat,
+        emailNotifications,
+        pushNotifications,
+        shiftReminders
+      }))
+      
+      setSuccess('Settings saved successfully!')
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (error) {
+      setError('Failed to save settings. Please try again.')
+      setTimeout(() => setError(''), 3000)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Save to localStorage for demo purposes
+      localStorage.setItem('shiftlyst_profile', JSON.stringify({
+        fullName,
+        phoneNumber,
+        jobTitle
+      }))
+      
+      setSuccess('Profile updated successfully!')
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (error) {
+      setError('Failed to update profile. Please try again.')
+      setTimeout(() => setError(''), 3000)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Load saved data on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('shiftlyst_settings')
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings)
+      setTimezone(settings.timezone || 'America/New_York')
+      setLanguage(settings.language || 'en')
+      setDateFormat(settings.dateFormat || 'MM/DD/YYYY')
+      setEmailNotifications(settings.emailNotifications !== undefined ? settings.emailNotifications : true)
+      setPushNotifications(settings.pushNotifications !== undefined ? settings.pushNotifications : false)
+      setShiftReminders(settings.shiftReminders !== undefined ? settings.shiftReminders : true)
+    }
+
+    const savedProfile = localStorage.getItem('shiftlyst_profile')
+    if (savedProfile) {
+      const profile = JSON.parse(savedProfile)
+      setFullName(profile.fullName || 'Manager User')
+      setPhoneNumber(profile.phoneNumber || '+1 (555) 123-4567')
+      setJobTitle(profile.jobTitle || 'Restaurant Manager')
+    }
+  }, [])
+
   const renderTabContent = () => {
+    // Check if we should open forms for specific tabs
+    const shouldOpenShiftsForm = typeof window !== 'undefined' && localStorage.getItem('shifts_openForm') === 'true'
+    const shouldOpenStaffForm = typeof window !== 'undefined' && localStorage.getItem('staff_openForm') === 'true'
+    
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardTab shifts={shifts} openShifts={openShifts} pendingShifts={pendingShifts} confirmedShifts={confirmedShifts} totalSlots={totalSlots} totalFilledSlots={totalFilledSlots} fillRate={fillRate} />
+        return <DashboardTab shifts={shifts} openShifts={openShifts} pendingShifts={pendingShifts} confirmedShifts={confirmedShifts} totalSlots={totalSlots} totalFilledSlots={totalFilledSlots} fillRate={fillRate} handleTabChange={handleTabChange} fullName={fullName} />
       case 'calendar':
         return <CalendarTab shifts={shifts} currentMonth={currentMonth} setCurrentMonth={setCurrentMonth} getShiftsForDate={getShiftsForDate} formatCalendarDate={formatCalendarDate} getDaysInMonth={getDaysInMonth} getFirstDayOfMonth={getFirstDayOfMonth} formatDate={formatDate} formatTime={formatTime} confirmDelete={confirmDelete} confirmCancel={confirmCancel} setSuccess={setSuccess} setError={setError} timezone={timezone} />
       case 'shifts':
-        return <ShiftsTab shifts={shifts} sortBy={sortBy} setSortBy={setSortBy} dataLoading={dataLoading} sortShifts={sortShifts} formatDate={formatDate} formatTime={formatTime} confirmDelete={confirmDelete} confirmCancel={confirmCancel} setSuccess={setSuccess} setError={setError} />
+        return <ShiftsTab shifts={shifts} sortBy={sortBy} setSortBy={setSortBy} dataLoading={dataLoading} sortShifts={sortShifts} formatDate={formatDate} formatTime={formatTime} confirmDelete={confirmDelete} confirmCancel={confirmCancel} setSuccess={setSuccess} setError={setError} initialShowForm={shouldOpenShiftsForm} />
       case 'staff':
-        return <StaffTab staff={staff} dataLoading={dataLoading} setSuccess={setSuccess} setError={setError} />
+        return <StaffTab staff={staff} dataLoading={dataLoading} setSuccess={setSuccess} setError={setError} initialShowAddStaff={shouldOpenStaffForm} />
       case 'analytics':
         return <AnalyticsTab shifts={shifts} />
       case 'notifications':
         return <NotificationsTab />
       case 'settings':
-        return <SettingsTab timezone={timezone} setTimezone={setTimezone} />
+        return <SettingsTab 
+          timezone={timezone} 
+          setTimezone={setTimezone} 
+          language={language} 
+          setLanguage={setLanguage} 
+          dateFormat={dateFormat} 
+          setDateFormat={setDateFormat} 
+          emailNotifications={emailNotifications} 
+          setEmailNotifications={setEmailNotifications} 
+          pushNotifications={pushNotifications} 
+          setPushNotifications={setPushNotifications} 
+          shiftReminders={shiftReminders} 
+          setShiftReminders={setShiftReminders}
+          onSave={handleSaveSettings}
+          isSaving={isSaving}
+          setSuccess={setSuccess}
+        />
       case 'profile':
-        return <ProfileTab user={user} handleLogout={handleLogout} />
+        return <ProfileTab 
+          user={user} 
+          handleLogout={handleLogout}
+          fullName={fullName}
+          setFullName={setFullName}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          jobTitle={jobTitle}
+          setJobTitle={setJobTitle}
+          onSave={handleSaveProfile}
+          isSaving={isSaving}
+          setSuccess={setSuccess}
+        />
       default:
-        return <DashboardTab shifts={shifts} openShifts={openShifts} pendingShifts={pendingShifts} confirmedShifts={confirmedShifts} totalSlots={totalSlots} totalFilledSlots={totalFilledSlots} fillRate={fillRate} />
+        return <DashboardTab shifts={shifts} openShifts={openShifts} pendingShifts={pendingShifts} confirmedShifts={confirmedShifts} totalSlots={totalSlots} totalFilledSlots={totalFilledSlots} fillRate={fillRate} handleTabChange={handleTabChange} fullName={fullName} />
     }
   }
 
@@ -612,7 +738,7 @@ export default function ManagerDashboardPage() {
                         {user.email?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Manager</p>
+                        <p className="font-medium text-gray-900">{getFirstName(fullName)}</p>
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
@@ -738,7 +864,7 @@ export default function ManagerDashboardPage() {
 }
 
 // Tab Components
-function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, totalSlots, totalFilledSlots, fillRate }: any) {
+function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, totalSlots, totalFilledSlots, fillRate, handleTabChange, fullName }: any) {
   // Get today's date for filtering
   const today = new Date().toISOString().split('T')[0]
   const todaysShifts = shifts.filter((shift: any) => shift.date === today)
@@ -769,7 +895,7 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Welcome back, Manager!</h1>
+            <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Welcome back, {getFirstName(fullName)}!</h1>
             <p className="text-red-100 text-lg font-light">Here's what's happening today</p>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -903,8 +1029,11 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
             <div className="space-y-4">
-              <button className="w-full flex items-center gap-4 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-left group shadow-sm">
-                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button 
+                onClick={() => handleTabChange('shifts', { openForm: true })}
+                className="w-full flex items-center gap-4 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors text-left group shadow-sm"
+              >
+                <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <span className="text-white text-2xl">+</span>
                 </div>
                 <div>
@@ -912,8 +1041,11 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
                   <p className="text-xs text-gray-700">Add new shift</p>
                 </div>
               </button>
-              <button className="w-full flex items-center gap-4 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-left group shadow-sm">
-                <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button 
+                onClick={() => handleTabChange('staff')}
+                className="w-full flex items-center gap-4 p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors text-left group shadow-sm"
+              >
+                <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <span className="text-white text-2xl">👥</span>
                 </div>
                 <div>
@@ -921,8 +1053,11 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
                   <p className="text-xs text-gray-700">View team</p>
                 </div>
               </button>
-              <button className="w-full flex items-center gap-4 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors text-left group shadow-sm">
-                <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button 
+                onClick={() => handleTabChange('analytics')}
+                className="w-full flex items-center gap-4 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors text-left group shadow-sm"
+              >
+                <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <span className="text-white text-2xl">📊</span>
                 </div>
                 <div>
@@ -930,8 +1065,11 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
                   <p className="text-xs text-gray-700">Performance data</p>
                 </div>
               </button>
-              <button className="w-full flex items-center gap-4 p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors text-left group shadow-sm">
-                <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <button 
+                onClick={() => handleTabChange('notifications')}
+                className="w-full flex items-center gap-4 p-4 bg-red-50 hover:bg-red-100 rounded-xl transition-colors text-left group shadow-sm"
+              >
+                <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <span className="text-white text-2xl">🔔</span>
                 </div>
                 <div>
@@ -951,7 +1089,12 @@ function DashboardTab({ shifts, openShifts, pendingShifts, confirmedShifts, tota
       <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
-          <button className="text-sm text-[#D5001C] hover:text-[#B0001A] font-medium">View All</button>
+          <button 
+            onClick={() => handleTabChange('shifts')}
+            className="text-sm text-[#D5001C] hover:text-[#B0001A] font-medium"
+          >
+            View All
+          </button>
         </div>
         {recentActivity.length === 0 ? (
           <div className="text-center py-12">
@@ -1468,7 +1611,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
                 setSelectedDate(newDate)
                 setShowDatePicker(false)
               }}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-gray-900 font-medium"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 text-gray-900 font-medium"
             />
           </div>
         )}
@@ -1768,7 +1911,7 @@ function CalendarTab({ shifts, currentMonth, setCurrentMonth, getShiftsForDate, 
   )
 }
 
-function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatDate, formatTime, confirmDelete, confirmCancel, setSuccess, setError }: any) {
+function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatDate, formatTime, confirmDelete, confirmCancel, setSuccess, setError, initialShowForm = false }: any) {
   // Form states for shift creation
   const [role, setRole] = useState('')
   const [date, setDate] = useState('')
@@ -1782,7 +1925,7 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
   const [notes, setNotes] = useState('')
   const [slots, setSlots] = useState(1)
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(initialShowForm)
 
   const commonRoles = [
     'Bartender', 'Server', 'Host/Hostess', 'Kitchen Staff', 'Barista',
@@ -1848,6 +1991,13 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
     setRole(selectedRole)
     setShowRoleDropdown(false)
   }
+
+  // Clear the form state from localStorage when component mounts
+  React.useEffect(() => {
+    if (initialShowForm && typeof window !== 'undefined') {
+      localStorage.removeItem('shifts_openForm')
+    }
+  }, [initialShowForm])
 
   return (
     <div className="space-y-8">
@@ -2142,14 +2292,21 @@ function ShiftsTab({ shifts, sortBy, setSortBy, dataLoading, sortShifts, formatD
   )
 }
 
-function StaffTab({ staff, dataLoading, setSuccess, setError }: any) {
+function StaffTab({ staff, dataLoading, setSuccess, setError, initialShowAddStaff = false }: any) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
-  const [showAddStaff, setShowAddStaff] = useState(false)
+  const [showAddStaff, setShowAddStaff] = useState(initialShowAddStaff)
   const [selectedStaff, setSelectedStaff] = useState<any>(null)
 
   const roles = ['all', 'Server', 'Bartender', 'Host', 'Kitchen Staff', 'Manager']
+
+  // Clear the form state from localStorage when component mounts
+  React.useEffect(() => {
+    if (initialShowAddStaff && typeof window !== 'undefined') {
+      localStorage.removeItem('staff_openForm')
+    }
+  }, [initialShowAddStaff])
 
   // Calculate stats for header
   const totalStaff = staff.length
@@ -2525,7 +2682,7 @@ function AnalyticsTab({ shifts }: any) {
   return (
     <div className="space-y-8">
       {/* Professional Header */}
-      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-purple-500/90 to-purple-600/90 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-indigo-500/90 to-indigo-600/90 shadow-xl">
         {/* Subtle animated background */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
@@ -2534,20 +2691,20 @@ function AnalyticsTab({ shifts }: any) {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Analytics Dashboard</h1>
-            <p className="text-purple-100 text-lg font-light">Track performance and identify trends</p>
+            <p className="text-indigo-100 text-lg font-light">Track performance and identify trends</p>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-center">
               <div className="text-3xl font-black text-white">{totalShifts}</div>
-              <div className="text-purple-100 text-sm">Total Shifts</div>
+              <div className="text-indigo-100 text-sm">Total Shifts</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">{fillRate}%</div>
-              <div className="text-purple-100 text-sm">Fill Rate</div>
+              <div className="text-indigo-100 text-sm">Fill Rate</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">${totalRevenue.toLocaleString()}</div>
-              <div className="text-purple-100 text-sm">Revenue</div>
+              <div className="text-indigo-100 text-sm">Revenue</div>
             </div>
           </div>
         </div>
@@ -2560,7 +2717,7 @@ function AnalyticsTab({ shifts }: any) {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium text-gray-900 bg-white"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-gray-900 bg-white"
             >
               <option value="7d" className="text-gray-900">Last 7 days</option>
               <option value="30d" className="text-gray-900">Last 30 days</option>
@@ -2569,7 +2726,7 @@ function AnalyticsTab({ shifts }: any) {
             </select>
           </div>
           
-          <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
+          <button className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
             Export Report
           </button>
         </div>
@@ -2605,7 +2762,7 @@ function AnalyticsTab({ shifts }: any) {
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
-              className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium text-gray-900 bg-white"
+              className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-gray-900 bg-white"
             >
               <option value="fillRate" className="text-gray-900">Fill Rate</option>
               <option value="shifts" className="text-gray-900">Shifts</option>
@@ -2708,7 +2865,7 @@ function NotificationsTab() {
   return (
     <div className="space-y-8">
       {/* Professional Header */}
-      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-teal-500/90 to-teal-600/90 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-red-500/90 to-red-600/90 shadow-xl">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -2716,20 +2873,20 @@ function NotificationsTab() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Notifications</h1>
-            <p className="text-teal-100 text-lg font-light">Stay updated with important alerts and updates</p>
+            <p className="text-red-100 text-lg font-light">Stay updated with important alerts and updates</p>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-center">
               <div className="text-3xl font-black text-white">{notifications.length}</div>
-              <div className="text-teal-100 text-sm">Total</div>
+              <div className="text-red-100 text-sm">Total</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">{unreadCount}</div>
-              <div className="text-teal-100 text-sm">Unread</div>
+              <div className="text-red-100 text-sm">Unread</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">3</div>
-              <div className="text-teal-100 text-sm">This Week</div>
+              <div className="text-red-100 text-sm">Types</div>
             </div>
           </div>
         </div>
@@ -2818,11 +2975,11 @@ function NotificationsTab() {
   )
 }
 
-function SettingsTab({ timezone, setTimezone }: any) {
+function SettingsTab({ timezone, setTimezone, language, setLanguage, dateFormat, setDateFormat, emailNotifications, setEmailNotifications, pushNotifications, setPushNotifications, shiftReminders, setShiftReminders, onSave, isSaving, setSuccess }: any) {
   return (
     <div className="space-y-8">
       {/* Professional Header */}
-      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-green-500/90 to-green-600/90 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-gray-500/90 to-gray-600/90 shadow-xl">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -2830,20 +2987,20 @@ function SettingsTab({ timezone, setTimezone }: any) {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-black mb-2 tracking-tight text-white drop-shadow">Settings</h1>
-            <p className="text-green-100 text-lg font-light">Configure your preferences and system settings</p>
+            <p className="text-gray-100 text-lg font-light">Configure your preferences and system settings</p>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-center">
               <div className="text-3xl font-black text-white">3</div>
-              <div className="text-green-100 text-sm">Categories</div>
+              <div className="text-gray-100 text-sm">Categories</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">12</div>
-              <div className="text-green-100 text-sm">Settings</div>
+              <div className="text-gray-100 text-sm">Settings</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-black text-white">2</div>
-              <div className="text-green-100 text-sm">Updated</div>
+              <div className="text-gray-100 text-sm">Updated</div>
             </div>
           </div>
         </div>
@@ -2869,7 +3026,7 @@ function SettingsTab({ timezone, setTimezone }: any) {
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 font-medium text-gray-900 bg-white"
               >
                 <option value="America/New_York" className="text-gray-900 bg-white">Eastern Time (ET)</option>
                 <option value="America/Chicago" className="text-gray-900 bg-white">Central Time (CT)</option>
@@ -2881,7 +3038,11 @@ function SettingsTab({ timezone, setTimezone }: any) {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">Language</label>
-              <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white">
+              <select 
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 font-medium text-gray-900 bg-white"
+              >
                 <option value="en" className="text-gray-900 bg-white">English</option>
                 <option value="es" className="text-gray-900 bg-white">Spanish</option>
                 <option value="fr" className="text-gray-900 bg-white">French</option>
@@ -2890,7 +3051,11 @@ function SettingsTab({ timezone, setTimezone }: any) {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">Date Format</label>
-              <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-900 bg-white">
+              <select 
+                value={dateFormat}
+                onChange={(e) => setDateFormat(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500/20 font-medium text-gray-900 bg-white"
+              >
                 <option value="MM/DD/YYYY" className="text-gray-900 bg-white">MM/DD/YYYY</option>
                 <option value="DD/MM/YYYY" className="text-gray-900 bg-white">DD/MM/YYYY</option>
                 <option value="YYYY-MM-DD" className="text-gray-900 bg-white">YYYY-MM-DD</option>
@@ -2957,19 +3122,36 @@ function SettingsTab({ timezone, setTimezone }: any) {
           </div>
           
           <div className="space-y-6">
-            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+            <button 
+              onClick={() => setSuccess('Password change feature coming soon!')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left"
+            >
               <div className="font-semibold text-gray-700">Change Password</div>
               <div className="text-gray-500 text-sm">Update your account password</div>
             </button>
 
-            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
+            <button 
+              onClick={() => setSuccess('Two-factor authentication feature coming soon!')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left"
+            >
               <div className="font-semibold text-gray-700">Two-Factor Authentication</div>
               <div className="text-gray-500 text-sm">Add extra security layer</div>
             </button>
 
-            <button className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left">
-              <div className="font-semibold text-gray-700">Login History</div>
-              <div className="text-gray-500 text-sm">View recent login activity</div>
+            <button 
+              onClick={() => setSuccess('Privacy settings feature coming soon!')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left"
+            >
+              <div className="font-semibold text-gray-700">Privacy Settings</div>
+              <div className="text-gray-500 text-sm">Manage your privacy preferences</div>
+            </button>
+
+            <button 
+              onClick={() => setSuccess('Notification preferences feature coming soon!')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors text-left"
+            >
+              <div className="font-semibold text-gray-700">Notification Preferences</div>
+              <div className="text-gray-500 text-sm">Customize your notifications</div>
             </button>
           </div>
         </div>
@@ -2982,8 +3164,12 @@ function SettingsTab({ timezone, setTimezone }: any) {
             <h3 className="text-lg font-bold text-gray-900">Save Changes</h3>
             <p className="text-gray-600 text-sm">Your settings will be applied immediately</p>
           </div>
-          <button className="bg-gradient-to-r from-green-500 to-green-600 hover:shadow-lg transform hover:scale-105 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300">
-            Save Settings
+          <button 
+            onClick={onSave}
+            disabled={isSaving}
+            className="bg-gradient-to-r from-gray-500 to-gray-600 hover:shadow-lg transform hover:scale-105 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            {isSaving ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </div>
@@ -2991,7 +3177,7 @@ function SettingsTab({ timezone, setTimezone }: any) {
   )
 }
 
-function ProfileTab({ user, handleLogout }: any) {
+function ProfileTab({ user, handleLogout, fullName, setFullName, phoneNumber, setPhoneNumber, jobTitle, setJobTitle, onSave, isSaving, setSuccess }: any) {
   return (
     <div className="space-y-8">
       {/* Professional Header */}
@@ -3053,7 +3239,8 @@ function ProfileTab({ user, handleLogout }: any) {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
               <input
                 type="text"
-                defaultValue="Manager User"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Enter your full name"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
               />
@@ -3063,7 +3250,8 @@ function ProfileTab({ user, handleLogout }: any) {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
               <input
                 type="tel"
-                defaultValue="+1 (555) 123-4567"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="Enter your phone number"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
               />
@@ -3073,7 +3261,8 @@ function ProfileTab({ user, handleLogout }: any) {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Job Title</label>
               <input
                 type="text"
-                defaultValue="Restaurant Manager"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
                 placeholder="Enter your job title"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500/20 font-medium text-gray-900 bg-white placeholder-gray-500"
               />
@@ -3218,11 +3407,12 @@ function ProfileTab({ user, handleLogout }: any) {
             <p className="text-gray-600 text-sm">Manage your account settings and preferences</p>
           </div>
           <div className="flex gap-4">
-            <button className="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-colors">
-              Cancel Changes
-            </button>
-            <button className="bg-gradient-to-r from-pink-500 to-pink-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300">
-              Save Changes
+            <button 
+              onClick={onSave}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-pink-500 to-pink-600 hover:shadow-lg transform hover:scale-105 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               onClick={handleLogout}
