@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { auth } from '../lib/firebase'
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
@@ -29,31 +30,41 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
-  const [selectedRole, setSelectedRole] = useState<'manager' | 'staff'>('manager')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
-        // Route based on selected role
-        if (selectedRole === 'manager') {
-          router.push('/manager')
-        } else {
-          router.push('/staff')
-        }
+        // Route to dashboard instead of specific role pages
+        router.push('/dashboard')
       }
     })
     return unsubscribe
-  }, [router, selectedRole])
+  }, [router])
 
-  async function handleEmailLogin(e: React.FormEvent) {
+  async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setIsLoading(true)
+    
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      if (isSignUp) {
+        // Sign up logic
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match')
+        }
+        if (password.length < 6) {
+          throw new Error('Password must be at least 6 characters')
+        }
+        await createUserWithEmailAndPassword(auth, email, password)
+      } else {
+        // Sign in logic
+        await signInWithEmailAndPassword(auth, email, password)
+      }
       // Role routing is handled in useEffect
     } catch (err: any) {
       setError(err.message)
@@ -135,45 +146,7 @@ export default function LoginPage() {
         <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
           {/* Subtle form glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#D5001C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          {/* Role Selection */}
-          <div className="mb-6 relative z-10">
-            <label className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4 block">
-              I am a...
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setSelectedRole('manager')}
-                className={`p-6 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] ${
-                  selectedRole === 'manager'
-                    ? 'bg-gradient-to-br from-[#D5001C] to-[#B0001A] border-[#D5001C] text-white shadow-lg shadow-[#D5001C]/25'
-                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100/80 hover:border-[#D5001C]/40 hover:shadow-lg'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-3xl mb-2">👔</div>
-                  <div className="font-bold text-lg mb-1">Manager</div>
-                  <div className="text-xs opacity-90 font-medium">Post & manage shifts</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRole('staff')}
-                className={`p-6 rounded-xl border-2 transition-all duration-500 transform hover:scale-[1.02] ${
-                  selectedRole === 'staff'
-                    ? 'bg-gradient-to-br from-[#D5001C] to-[#B0001A] border-[#D5001C] text-white shadow-lg shadow-[#D5001C]/25'
-                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100/80 hover:border-[#D5001C]/40 hover:shadow-lg'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-3xl mb-2">💼</div>
-                  <div className="font-bold text-lg mb-1">Staff</div>
-                  <div className="text-xs opacity-90 font-medium">Find & accept shifts</div>
-                </div>
-              </button>
-            </div>
-          </div>
-          <form onSubmit={handleEmailLogin} className="space-y-5 relative z-10">
+          <form onSubmit={handleEmailAuth} className="space-y-5 relative z-10">
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
                 Email Address
@@ -193,13 +166,28 @@ export default function LoginPage() {
               </label>
               <input
                 type="password"
-                placeholder="Enter your password"
+                placeholder={isSignUp ? "Create a password" : "Enter your password"}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
                 className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
               />
             </div>
+            {isSignUp && (
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                  className="w-full bg-gray-50/80 border-2 border-gray-200 rounded-xl p-4 text-gray-900 placeholder-gray-500 focus:border-[#D5001C] focus:outline-none focus:ring-2 focus:ring-[#D5001C]/20 focus:bg-white transition-all duration-300 font-medium"
+                />
+              </div>
+            )}
             {error && (
               <div className="bg-red-50/80 border-2 border-red-200 rounded-xl p-4 backdrop-blur-sm">
                 <p className="text-red-600 text-sm font-medium">{error}</p>
@@ -213,15 +201,31 @@ export default function LoginPage() {
               {isLoading ? (
                 <div className="flex items-center justify-center gap-3">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Signing In...</span>
+                  <span>{isSignUp ? 'Creating Account...' : 'Signing In...'}</span>
                 </div>
               ) : (
-                <span>Sign In as {selectedRole === 'manager' ? 'Manager' : 'Staff'}</span>
+                <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
               )}
               {/* Button glow effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             </button>
           </form>
+          {/* Toggle between sign in and sign up */}
+          <div className="text-center mt-4 relative z-10">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp)
+                setError('')
+                setEmail('')
+                setPassword('')
+                setConfirmPassword('')
+              }}
+              className="text-[#D5001C] hover:text-[#B0001A] font-medium transition-colors duration-300"
+            >
+              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Create one"}
+            </button>
+          </div>
           {/* Enhanced Divider */}
           <div className="flex items-center my-6 relative z-10">
             <div className="flex-1 border-t-2 border-gray-200/50"></div>
